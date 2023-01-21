@@ -1,0 +1,111 @@
+{
+	"head": {
+        "type": "header",
+        "description": "General Settings"
+    },
+	"eye-mode": {
+		"type": "combobox",
+		"default": "lids",
+		"description": "Eye Mode",
+		"options": {
+			"lids": 0,
+			"bulb": 1
+		}
+	},
+	"eye-line-width": {
+		"type": "scale",
+		"default": 1,
+		"min": 1,
+		"max": 3,
+		"step": 1,
+		"description": "Eye Line Width"
+	},
+	"eye-margin": {
+		"type": "scale",
+		"default": 1,
+		"min": 1,
+		"max": 3,
+		"step": 1,
+		"description": "Eye Margin"
+	},
+	"eye-repaint-interval": {
+		"type": "scale",
+		"default": 100,
+		"min": 50,
+		"max": 500,
+		"step": 5,
+		"description": "Eye Repaint Interval"
+	},
+	"mouse-circle-mode": {
+		"type": "scale",
+		"default": 1,
+		"min": 0,
+		"max": 1,
+		"step": 1,
+		"description": "Mouse Circle Mode"
+	},
+	"mouse-circle-size": {
+		"type": "scale",
+		"default": 60,
+		"min": 40,
+		"max": 120,
+		"step": 1,
+		"description": "Mouse Circle Size"
+	},
+	"mouse-circle-opacity": {
+		"type": "scale",
+		"default": 200,
+		"min": 0,
+		"max": 255,
+		"step": 1,
+		"description": "Mouse Circle Opacity"
+	},
+	"mouse-circle-repaint-interval": {
+		"type": "scale",
+		"default": 10,
+		"min": 0,
+		"max": 100,
+		"step": 1,
+		"description": "Mouse Circle Repaint Interval"
+	},
+	"mouse-circle-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Mouse Circle Enable"
+	},
+	"mouse-circle-left-click-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Mouse Circle Left Click Enable"
+	},
+	"mouse-circle-right-click-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Mouse Circle Right Click Enable"
+	},
+	"mouse-circle-middle-click-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Mouse Circle Middle Click Enable"
+	},
+	"mouse-circle-color": {
+		"type": "colorchooser",
+		"default": "#ffc107",
+		"description": "Mouse Circle Color"
+	},
+	"mouse-circle-left-click-color": {
+		"type": "colorchooser",
+		"default": "#ffc107",
+		"description": "Mouse Circle Left Click Color"
+	},
+	"mouse-circle-middle-click-color": {
+		"type": "colorchooser",
+		"default": "#ffc107",
+		"description": "Mouse Circle Middle Click Color"
+	},
+	"mouse-circle-right-click-color": {
+		"type": "colorchooser",
+		"default": "#ffc107",
+		"description": "Mouse Circle Right Click Color"
+	}
+}

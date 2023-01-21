@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "uuid": "c-eyes@anaximeno",
+  "name": "Cinnamon Eyes",
+  "description": "An eye on the panel that follow the movement of your mouse",
+  "settings-schema": "org.cinnamon.applets.c-eyes",
+  "multiversion": true,
+  "url": "https://github.com/anaximeno/c-eyes"
+}
