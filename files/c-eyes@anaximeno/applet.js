@@ -161,7 +161,7 @@ class Eye extends Applet.Applet {
     constructor(metadata, orientation, panelHeight, instanceId) {
         super(orientation, panelHeight, instanceId);
 
-        this.setAllowedLayout(Applet.AllowedLayout.BOTH);
+        this.setAllowedLayout(Applet.AllowedLayout.HORIZONTAL);
         this._setupSettings(metadata.uuid, instanceId);
 
         this.metadata = metadata;
@@ -171,6 +171,7 @@ class Eye extends Applet.Applet {
         this.actor.add(this.area);
 
         Atspi.init();
+
         this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
         this.setActive(true);
@@ -225,10 +226,7 @@ class Eye extends Applet.Applet {
         }
     }
 
-    // MOUSE CIRCLE FUNCTIONS
-
     _mouseCircleCreateDataIcon(name, color) {
-        // Load content
         let source = Gio.File.new_for_path(`${this.metadata.path}/circle/${this.mouse_circle_mode}.svg`);
         let [l_success, contents] = source.load_contents(null);
         contents = imports.byteArray.toString(contents);
