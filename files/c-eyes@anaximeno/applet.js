@@ -61,14 +61,14 @@ class Eye extends Applet.Applet {
             Settings.BindingDirection.IN,
             "eye-mode",
             "eye_mode",
-            null
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-mode",
             "mouse_circle_mode",
-            (e) => this.setMouseCircleActive(null),
+            this.on_property_updated
         );
 
 
@@ -76,7 +76,7 @@ class Eye extends Applet.Applet {
             Settings.BindingDirection.IN,
             "eye-line-width",
             "eye_line_width",
-            null
+            this.on_property_updated
         );
 
 
@@ -84,77 +84,77 @@ class Eye extends Applet.Applet {
             Settings.BindingDirection.IN,
             "eye-margin",
             "eye_margin",
-            null
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-size",
             "mouse_circle_size",
-            (e) => this.setMouseCircleActive(null),
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-enable",
             "mouse_circle_enable",
-            (e) => this.setMouseCircleActive(null),
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-left-click-enable",
             "mouse_circle_left_click_enable",
-            null
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-right-click-enable",
             "mouse_circle_right_click_enable",
-            null
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-middle-click-enable",
             "mouse_circle_middle_click_enable",
-            null
+            this.on_property_updated
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-color",
             "mouse_circle_color",
-            (e) => this.setMouseCirclePropertyUpdate(),
+            this.on_property_updated,
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-left-click-color",
             "mouse_circle_left_click_color",
-            (e) => this.setMouseCirclePropertyUpdate(),
+            this.on_property_updated,
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-middle-click-color",
             "mouse_circle_middle_click_color",
-            (e) => this.setMouseCirclePropertyUpdate(),
+            this.on_property_updated,
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-right-click-color",
             "mouse_circle_right_click_color",
-            (e) => this.setMouseCirclePropertyUpdate(),
+            this.on_property_updated,
         );
 
         this.settings.bindProperty(
             Settings.BindingDirection.IN,
             "mouse-circle-opacity",
             "mouse_circle_opacity",
-            (e) => this.setMouseCirclePropertyUpdate(),
+            this.on_property_updated,
         );
     }
 
@@ -183,6 +183,11 @@ class Eye extends Applet.Applet {
 
     on_applet_clicked(event) {
         this._eyeClick(this, event);
+    }
+
+    on_property_updated(event) {
+        this.setMouseCirclePropertyUpdate();
+        this.setEyePropertyUpdate();
     }
 
     destroy() {
@@ -323,8 +328,8 @@ class Eye extends Applet.Applet {
 
     setEyePropertyUpdate() {
         const margin = 2 * this.eye_margin;
-        this.area.set_width(EYE_AREA_WIDTH - margin);
-        this.area.set_height(EYE_AREA_HEIGHT - margin);
+        this.area.set_width(EYE_AREA_WIDTH + margin);
+        this.area.set_height(EYE_AREA_HEIGHT + margin);
     }
 
     setMouseCircleActive(enabled) {

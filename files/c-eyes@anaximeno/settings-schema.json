@@ -44,18 +44,18 @@
 	"eye-line-width": {
 		"type": "spinbutton",
 		"description": "Eye Line Width",
-		"default": 1,
+		"default": 2,
 		"min": 1,
 		"max": 5,
 		"step": 1
 	},
 	"eye-margin": {
 		"type": "spinbutton",
-		"default": 1,
+		"default": 3,
 		"min": 1,
-		"max": 5,
+		"max": 10,
 		"step": 1,
-		"description": "Eye Margin"
+		"description": "Eye Margin Size"
 	},
 	"mouse-circle-size": {
 		"type": "spinbutton",
@@ -107,7 +107,7 @@
 	},
 	"head4": {
 		"type": "header",
-		"description": "Color"
+		"description": "Colors"
 	},
 	"mouse-circle-color": {
 		"type": "colorchooser",
@@ -135,6 +135,6 @@
 		"default": 200,
 		"min": 0,
 		"max": 255,
-		"step": 1
+		"step": 5
 	}
 }
