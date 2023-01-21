@@ -27,51 +27,147 @@ const Mainloop = imports.mainloop;
 const { Atspi, Clutter, GLib , GObject, Gio, St } = imports.gi;
 
 
+const EYE_AREA_WIDTH = 34;
+const EYE_AREA_HEIGHT = 16;
+
+
 // Class to create the Eye
 class Eye extends Applet.Applet {
     _initDataDir() {
-        // let data_dir = `${GLib.get_user_cache_dir()}/${Me.metadata['gettext-domain']}`;
         let data_dir = `${GLib.get_user_cache_dir()}/${this.metadata.uuid}`;
         if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
             throw new Error(`Failed to create cache dir at ${data_dir}`);
         return data_dir;
     }
 
+    _setupSettings(uuid, instanceId) {
+        this.settings = new Settings.AppletSettings(this, uuid, instanceId);
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "eye-repaint-interval",
+            "eye_repaint_interval",
+            (e) => this.setActive(true)
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-repaint-interval",
+            "mouse_circle_repaint_interval",
+            (e) => this.setMouseCircleActive(null)
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "eye-mode",
+            "eye_mode",
+            null
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-mode",
+            "mouse_circle_mode",
+            (e) => this.setMouseCircleActive(null),
+        );
+
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "eye-line-width",
+            "eye_line_width",
+            null
+        );
+
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "eye-margin",
+            "eye_margin",
+            null
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-size",
+            "mouse_circle_size",
+            (e) => this.setMouseCircleActive(null),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-enable",
+            "mouse_circle_enable",
+            (e) => this.setMouseCircleActive(null),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-left-click-enable",
+            "mouse_circle_left_click_enable",
+            null
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-right-click-enable",
+            "mouse_circle_right_click_enable",
+            null
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-middle-click-enable",
+            "mouse_circle_middle_click_enable",
+            null
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-color",
+            "mouse_circle_color",
+            (e) => this.setMouseCirclePropertyUpdate(),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-left-click-color",
+            "mouse_circle_left_click_color",
+            (e) => this.setMouseCirclePropertyUpdate(),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-middle-click-color",
+            "mouse_circle_middle_click_color",
+            (e) => this.setMouseCirclePropertyUpdate(),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-right-click-color",
+            "mouse_circle_right_click_color",
+            (e) => this.setMouseCirclePropertyUpdate(),
+        );
+
+        this.settings.bindProperty(
+            Settings.BindingDirection.IN,
+            "mouse-circle-opacity",
+            "mouse_circle_opacity",
+            (e) => this.setMouseCirclePropertyUpdate(),
+        );
+    }
+
     constructor(metadata, orientation, panelHeight, instanceId) {
         super(orientation, panelHeight, instanceId);
 
-        this.metadata = metadata;
-        this.settings = new Settings.AppletSettings(this, metadata.uuid, instanceId);
-
         this.setAllowedLayout(Applet.AllowedLayout.BOTH);
+        this._setupSettings(metadata.uuid, instanceId);
 
-        // Load parameters for Eye
-        this.eye_mode = "lids";
-        this.eye_line_width = 1.5;
-        this.eye_margin = 1.5;
-        this.eye_repaint_interval = 100;
-
-        // Load parameters for Mouse circle
-        this.mouse_circle_mode = 1;
-        this.mouse_circle_size = 60;
-        this.mouse_circle_opacity = 200;
-        this.mouse_circle_repaint_interval = 10;
-        this.mouse_circle_enable = true;
-        this.mouse_circle_left_click_enable = true;
-        this.mouse_circle_right_click_enable = true;
-        this.mouse_circle_middle_click_enable = true;
-
-        // Load parameters for Mouse circle color
-        this.mouse_circle_color = "#ffc107";
-        this.mouse_circle_left_click_color = "#ffc107";
-        this.mouse_circle_right_click_color = "#ffc107";
-        this.mouse_circle_middle_click_color = "#ffc107";
-
-        this.mouse_circle_show = false;
-        this.mouse_pointer = null;
+        this.metadata = metadata;
         this.data_dir = this._initDataDir();
-
         this.area = new St.DrawingArea();
+
         this.actor.add(this.area);
 
         Atspi.init();
@@ -79,8 +175,6 @@ class Eye extends Applet.Applet {
 
         this.setActive(true);
         this.setMouseCirclePropertyUpdate();
-
-        global.log(this.area.get_surface_size());
     }
 
     on_applet_removed_from_panel(deleteConfig) {
@@ -157,7 +251,6 @@ class Eye extends Applet.Applet {
     }
 
     _mouseCircleClick(event) {
-
         let clickAnimation = function(self, click_type, color) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
             let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
@@ -228,6 +321,12 @@ class Eye extends Applet.Applet {
         }
     }
 
+    setEyePropertyUpdate() {
+        const margin = 2 * this.eye_margin;
+        this.area.set_width(EYE_AREA_WIDTH - margin);
+        this.area.set_height(EYE_AREA_HEIGHT - margin);
+    }
+
     setMouseCircleActive(enabled) {
         if (enabled == null) {
             enabled = this.mouse_circle_show;
@@ -283,6 +382,7 @@ class Eye extends Applet.Applet {
         }
 
         if (button === 2 /* Right button */) {
+            //
         }
     }
 
@@ -420,13 +520,6 @@ class Eye extends Applet.Applet {
         cr.save();
         cr.restore();
         cr.$dispose();
-    }
-
-    setEyePropertyUpdate() {
-        this.area.set_width(40);//XXX: should get the icon size on the panel
-        // this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
-        this.area.set_height(20);//XXX should get the icon size on the panel
-        // this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
     }
 }
 

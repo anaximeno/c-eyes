@@ -1,72 +1,73 @@
 {
-	"head": {
-        "type": "header",
-        "description": "General Settings"
-    },
+	"head1": {
+		"type": "header",
+		"description": "Modes"
+	},
 	"eye-mode": {
 		"type": "combobox",
 		"default": "lids",
 		"description": "Eye Mode",
 		"options": {
-			"lids": 0,
-			"bulb": 1
+			"Lids": "lids",
+			"Bulb": "bulb"
 		}
 	},
+	"mouse-circle-mode": {
+		"type": "combobox",
+		"default": 1,
+		"description": "Mouse Circle Mode",
+		"options": {
+			"Simple": 1,
+			"Trigun": 2,
+			"Nublo": 3,
+			"Risco": 4,
+			"Wolf": 5,
+			"Pincel": 6,
+			"Claw": 7,
+			"Metropoli": 8,
+			"Flowey": 9,
+			"Egypt": 10,
+			"Ouroboros": 11,
+			"Helix": 12,
+			"Direction": 13,
+			"Spinks": 14,
+			"Thatch": 15,
+			"Cotton": 16,
+			"Circle": 17,
+			"Gear": 18
+		}
+	},
+	"head2": {
+		"type": "header",
+		"description": "Sizes"
+	},
 	"eye-line-width": {
-		"type": "scale",
+		"type": "spinbutton",
+		"description": "Eye Line Width",
 		"default": 1,
 		"min": 1,
-		"max": 3,
-		"step": 1,
-		"description": "Eye Line Width"
+		"max": 5,
+		"step": 1
 	},
 	"eye-margin": {
-		"type": "scale",
+		"type": "spinbutton",
 		"default": 1,
 		"min": 1,
-		"max": 3,
+		"max": 5,
 		"step": 1,
 		"description": "Eye Margin"
 	},
-	"eye-repaint-interval": {
-		"type": "scale",
-		"default": 100,
-		"min": 50,
-		"max": 500,
-		"step": 5,
-		"description": "Eye Repaint Interval"
-	},
-	"mouse-circle-mode": {
-		"type": "scale",
-		"default": 1,
-		"min": 0,
-		"max": 1,
-		"step": 1,
-		"description": "Mouse Circle Mode"
-	},
 	"mouse-circle-size": {
-		"type": "scale",
+		"type": "spinbutton",
 		"default": 60,
-		"min": 40,
+		"min": 20,
 		"max": 120,
-		"step": 1,
+		"step": 5,
 		"description": "Mouse Circle Size"
 	},
-	"mouse-circle-opacity": {
-		"type": "scale",
-		"default": 200,
-		"min": 0,
-		"max": 255,
-		"step": 1,
-		"description": "Mouse Circle Opacity"
-	},
-	"mouse-circle-repaint-interval": {
-		"type": "scale",
-		"default": 10,
-		"min": 0,
-		"max": 100,
-		"step": 1,
-		"description": "Mouse Circle Repaint Interval"
+	"head3": {
+		"type": "header",
+		"description": "Events"
 	},
 	"mouse-circle-enable": {
 		"type": "checkbox",
@@ -76,17 +77,37 @@
 	"mouse-circle-left-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Left Click Enable"
+		"description": "Mouse Circle Left Click"
 	},
 	"mouse-circle-right-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Right Click Enable"
+		"description": "Mouse Circle Right Click"
 	},
 	"mouse-circle-middle-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Middle Click Enable"
+		"description": "Mouse Circle Middle Click"
+	},
+	"mouse-circle-repaint-interval": {
+		"type": "spinbutton",
+		"default": 10,
+		"min": 1,
+		"max": 100,
+		"step": 1,
+		"description": "Mouse Circle Repaint Interval"
+	},
+	"eye-repaint-interval": {
+		"type": "spinbutton",
+		"default": 100,
+		"min": 5,
+		"max": 500,
+		"step": 5,
+		"description": "Eye Repaint Interval"
+	},
+	"head4": {
+		"type": "header",
+		"description": "Color"
 	},
 	"mouse-circle-color": {
 		"type": "colorchooser",
@@ -107,5 +128,13 @@
 		"type": "colorchooser",
 		"default": "#ffc107",
 		"description": "Mouse Circle Right Click Color"
+	},
+	"mouse-circle-opacity": {
+		"type": "spinbutton",
+		"description": "Mouse Circle Opacity",
+		"default": 200,
+		"min": 0,
+		"max": 255,
+		"step": 1
 	}
 }
