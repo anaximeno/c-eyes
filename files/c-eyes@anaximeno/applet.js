@@ -433,7 +433,7 @@ class Eye extends Applet.Applet {
                 let ty = 0;
                 try {
                     [tx, ty] = obj.get_position();
-                } catch {
+                } catch (e) {
                 }
                 area_x += tx;
                 area_y += ty;
