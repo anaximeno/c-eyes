@@ -176,6 +176,8 @@ class Eye extends Applet.Applet {
 
         this.setActive(true);
         this.setMouseCirclePropertyUpdate();
+
+        this._file_mem_cache = {};
     }
 
     on_applet_removed_from_panel(deleteConfig) {
@@ -195,6 +197,17 @@ class Eye extends Applet.Applet {
         this.setMouseCircleActive(false);
         this.setActive(false);
         this.area.destroy();
+    }
+
+    _get_mouse_circle_icon(dir, mode, click_type, color) {
+        const key = `${dir}${mode}${click_type}${color}`;
+
+        if (this._file_mem_cache[key]) {
+            return this._file_mem_cache[key];
+        }
+
+        this._file_mem_cache[key] = Gio.icon_new_for_string(`${dir}/icons/${mode}_${click_type}_${color}.svg`);
+        return this._file_mem_cache[key];
     }
 
     setActive(enabled) {
@@ -258,8 +271,10 @@ class Eye extends Applet.Applet {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
             let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
 
+            let icon = self._get_mouse_circle_icon(self.data_dir, self.mouse_circle_mode, click_type, color);
+
             if (self.mouse_pointer) {
-                self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
+                self.mouse_pointer.gicon = icon;
             }
 
             let actor = new St.Icon({
@@ -270,7 +285,7 @@ class Eye extends Applet.Applet {
                 track_hover : false,
                 icon_size : self.mouse_circle_size,
                 opacity : self.mouse_circle_opacity,
-                gicon : Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`)
+                gicon : icon
             });
 
             Main.uiGroup.add_child(actor);
@@ -285,11 +300,12 @@ class Eye extends Applet.Applet {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: function () {
                     Main.uiGroup.remove_child(actor);
+
                     actor.destroy;
                     actor = null;
 
                     if (self.mouse_pointer) {
-                        self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
+                        self.mouse_pointer.gicon = self._get_mouse_circle_icon(self.data_dir, self.mouse_circle_mode, 'default', self.mouse_circle_color);
                     }
                 }
             });
@@ -320,7 +336,7 @@ class Eye extends Applet.Applet {
         if (this.mouse_pointer) {
             this.mouse_pointer.icon_size = this.mouse_circle_size;
             this.mouse_pointer.opacity = this.mouse_circle_enable ? this.mouse_circle_opacity : 0;
-            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
+            this.mouse_pointer.gicon = this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color);
         }
     }
 
@@ -352,7 +368,7 @@ class Eye extends Applet.Applet {
                 track_hover : false,
                 icon_size: this.mouse_circle_size,
                 opacity: this.mouse_circle_opacity,
-                gicon: Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`)
+                gicon: this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color),
             });
 
             Main.uiGroup.add_child(this.mouse_pointer);
