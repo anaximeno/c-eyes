@@ -24,7 +24,7 @@ const Settings = imports.ui.settings;
 
 const Mainloop = imports.mainloop;
 
-const { Atspi, Clutter, GLib , GObject, Gio, St } = imports.gi;
+const { Atspi, Clutter, GLib, GObject, Gio, St } = imports.gi;
 
 
 const EYE_AREA_WIDTH = 34;
@@ -213,17 +213,17 @@ class Eye extends Applet.Applet {
     setActive(enabled) {
         this.setEyePropertyUpdate();
 
-        if(this._repaint_handler) {
+        if (this._repaint_handler) {
             this.area.disconnect(this._repaint_handler);
             this._repaint_handler = null;
         }
 
-        if(this._eye_update_handler) {
+        if (this._eye_update_handler) {
             Mainloop.source_remove(this._eye_update_handler);
             this._eye_update_handler = null;
         }
 
-        if(this._mouse_circle_update_handler) {
+        if (this._mouse_circle_update_handler) {
             Mainloop.source_remove(this._mouse_circle_update_handler);
             this._mouse_circle_update_handler = null;
         }
@@ -267,7 +267,7 @@ class Eye extends Applet.Applet {
     }
 
     _mouseCircleClick(event) {
-        let clickAnimation = function(self, click_type, color) {
+        let clickAnimation = function (self, click_type, color) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
             let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
 
@@ -280,12 +280,12 @@ class Eye extends Applet.Applet {
             let actor = new St.Icon({
                 x: mouse_x - (self.mouse_circle_size / 2),
                 y: mouse_y - (self.mouse_circle_size / 2),
-                reactive : false,
-                can_focus : false,
-                track_hover : false,
-                icon_size : self.mouse_circle_size,
-                opacity : self.mouse_circle_opacity,
-                gicon : icon
+                reactive: false,
+                can_focus: false,
+                track_hover: false,
+                icon_size: self.mouse_circle_size,
+                opacity: self.mouse_circle_opacity,
+                gicon: icon
             });
 
             Main.uiGroup.add_child(actor);
@@ -314,15 +314,15 @@ class Eye extends Applet.Applet {
         switch (event.type) {
             case 'mouse:button:1p':
                 if (this.mouse_circle_left_click_enable)
-                    clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
+                    clickAnimation(this, 'left_click', this.mouse_circle_left_click_color);
                 break;
             case 'mouse:button:2p':
                 if (this.mouse_circle_middle_click_enable)
-                    clickAnimation(this,'middle_click', this.mouse_circle_middle_click_color);
+                    clickAnimation(this, 'middle_click', this.mouse_circle_middle_click_color);
                 break;
             case 'mouse:button:3p':
                 if (this.mouse_circle_right_click_enable)
-                    clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
+                    clickAnimation(this, 'right_click', this.mouse_circle_right_click_color);
                 break;
         }
     }
@@ -363,9 +363,9 @@ class Eye extends Applet.Applet {
             );
 
             this.mouse_pointer = new St.Icon({
-                reactive : false,
-                can_focus : false,
-                track_hover : false,
+                reactive: false,
+                can_focus: false,
+                track_hover: false,
                 icon_size: this.mouse_circle_size,
                 opacity: this.mouse_circle_opacity,
                 gicon: this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color),
@@ -378,7 +378,7 @@ class Eye extends Applet.Applet {
 
             this._mouseListener.register('mouse');
         } else {
-            if(this._mouse_circle_update_handler) {
+            if (this._mouse_circle_update_handler) {
                 Mainloop.source_remove(this._mouse_circle_update_handler);
                 this._mouse_circle_update_handler = null;
             }
@@ -406,14 +406,12 @@ class Eye extends Applet.Applet {
     }
 
     _eyeDraw(area) {
-        let get_pos = function(self)
-        {
+        let get_pos = function (self) {
             let area_x = 0;
             let area_y = 0;
 
             let obj = self.area;
-            do
-            {
+            do {
                 let tx = 0;
                 let ty = 0;
                 try {
@@ -424,7 +422,7 @@ class Eye extends Applet.Applet {
                 area_y += ty;
                 obj = obj.get_parent();
             }
-            while(obj);
+            while (obj);
 
             return [area_x, area_y];
         };
@@ -446,17 +444,15 @@ class Eye extends Applet.Applet {
         let pupil_rad;
         let max_rad;
 
-        if(this.eye_mode === "bulb")
-        {
+        if (this.eye_mode === "bulb") {
             eye_rad = (area_height) / 2.3;
             iris_rad = eye_rad * 0.6;
             pupil_rad = iris_rad * 0.4;
 
-            max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad) ) - this.eye_line_width;
+            max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - this.eye_line_width;
         }
 
-        if(this.eye_mode === "lids")
-        {
+        if (this.eye_mode === "lids") {
             eye_rad = (area_height) / 2;
             iris_rad = eye_rad * 0.5;
             pupil_rad = iris_rad * 0.4;
@@ -464,7 +460,7 @@ class Eye extends Applet.Applet {
             max_rad = eye_rad * (Math.pow(Math.cos(mouse_ang), 4) * 0.5 + 0.25)
         }
 
-        if(mouse_rad > max_rad)
+        if (mouse_rad > max_rad)
             mouse_rad = max_rad;
 
         let iris_arc = Math.asin(iris_rad / eye_rad);
@@ -485,39 +481,37 @@ class Eye extends Applet.Applet {
         cr.translate(area_width * 0.5, area_height * 0.5);
         cr.setLineWidth(this.eye_line_width);
 
-        if(this.eye_mode === "bulb")
-        {
-            cr.arc(0,0, eye_rad, 0,2 * Math.PI);
+        if (this.eye_mode === "bulb") {
+            cr.arc(0, 0, eye_rad, 0, 2 * Math.PI);
             cr.stroke();
         }
 
-        if(this.eye_mode === "lids")
-        {
+        if (this.eye_mode === "lids") {
             let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
             let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
             let amp;
 
             let top_lid = 0.8;
-            let bottom_lid = 0.6
+            let bottom_lid = 0.6;
 
             amp = eye_rad * top_lid;
             cr.moveTo(-eye_rad, 0);
-            cr.curveTo(x_def-iris_rad, y_def + amp,
-                        x_def + iris_rad, y_def + amp, eye_rad, 0);
+            cr.curveTo(x_def - iris_rad, y_def + amp,
+                x_def + iris_rad, y_def + amp, eye_rad, 0);
 
             amp = eye_rad * bottom_lid;
             cr.curveTo(x_def + iris_rad, y_def - amp,
-                        x_def - iris_rad, y_def - amp, -eye_rad, 0);
+                x_def - iris_rad, y_def - amp, -eye_rad, 0);
             cr.stroke();
 
             amp = eye_rad * top_lid;
             cr.moveTo(-eye_rad, 0);
             cr.curveTo(x_def - iris_rad, y_def + amp,
-                        x_def + iris_rad, y_def + amp, eye_rad, 0);
+                x_def + iris_rad, y_def + amp, eye_rad, 0);
 
             amp = eye_rad * bottom_lid;
             cr.curveTo(x_def + iris_rad, y_def - amp,
-                        x_def - iris_rad, y_def - amp, -eye_rad, 0);
+                x_def - iris_rad, y_def - amp, -eye_rad, 0);
             cr.clip();
         }
 
@@ -526,14 +520,14 @@ class Eye extends Applet.Applet {
 
         cr.translate(iris_r * Math.sin(eye_ang), 0);
         cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
-        cr.arc(0,0, 1.0, 0,2 * Math.PI);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
         cr.stroke();
         cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
         cr.translate(-iris_r * Math.sin(eye_ang), 0);
 
         cr.translate(eye_rad * Math.sin(eye_ang), 0);
         cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
-        cr.arc(0,0, 1.0, 0,2 * Math.PI);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
         cr.fill();
 
         cr.save();
