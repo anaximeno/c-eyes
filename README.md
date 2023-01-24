@@ -7,16 +7,16 @@ and mantained by [Anaxímeno Brito](https://github.com/anaximeno).
 - **Lower Cinnamon Version Supported**: 5.4
 - **Higher Cinnamon Version Supported**: Current
 
-### Authors
+### Contributors
 
 <!-- NOTE: If you did contribute to this applet, you can add your github username as a link to you profile address (optional) in the list bellow. Please add your name before the last one `et upstream`. -->
 
-- [anaximeno](https://github.com/anaximeno), [et upstream](https://github.com/alexeylovchikov/eye-extended-shell-extension)
+- [anaximeno](https://github.com/anaximeno), [et upstream](https://github.com/alexeylovchikov/eye-extended-shell-extension/graphs/contributors)
 
 
 ### Translators
 
-<!-- NOTE: If you did help translating this applet, you can add your github username as a link to you profile address (optional) in the list bellow.  -->
+<!-- NOTE: If you did help translating this applet, you can add your github username as a link to you profile address (optional) in the list bellow. -->
 
 - 
 
