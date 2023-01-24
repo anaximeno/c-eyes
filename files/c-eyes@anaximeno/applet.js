@@ -408,9 +408,7 @@ class Eye extends Applet.Applet {
         if (button === 1 /* Left button */) {
             this.mouse_circle_show = !this.mouse_circle_show;
             this.setMouseCircleActive(this.mouse_circle_show);
-            if (!this.mouse_circle_show) {
-                this.area.queue_repaint();
-            }
+            this.area.queue_repaint();
         }
 
         if (button === 2 /* Right button */) {
