@@ -399,7 +399,7 @@ class Eye extends Applet.Applet {
     _eyeTimeout() {
         let [mouse_x, mouse_y, mask] = global.get_pointer();
 
-        if (mouse_x !== this._last_mouse_x_pos && mouse_y !== this._last_mouse_y_pos) {
+        if (mouse_x !== this._last_mouse_x_pos || mouse_y !== this._last_mouse_y_pos) {
             this._last_mouse_x_pos = mouse_x;
             this._last_mouse_y_pos = mouse_y;
             this.area.queue_repaint();

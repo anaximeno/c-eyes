@@ -99,7 +99,7 @@
 	},
 	"eye-repaint-interval": {
 		"type": "spinbutton",
-		"default": 90,
+		"default": 60,
 		"min": 5,
 		"max": 200,
 		"step": 5,
