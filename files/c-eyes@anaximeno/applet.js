@@ -33,6 +33,17 @@ const EYE_AREA_HEIGHT = 16;
 
 // Class to create the Eye
 class Eye extends Applet.Applet {
+    _get_mouse_circle_icon(dir, mode, click_type, color) {
+        const key = `${dir}${mode}${click_type}${color}`;
+
+        if (this._file_mem_cache[key]) {
+            return this._file_mem_cache[key];
+        }
+
+        this._file_mem_cache[key] = Gio.icon_new_for_string(`${dir}/icons/${mode}_${click_type}_${color}.svg`);
+        return this._file_mem_cache[key];
+    }
+
     _initDataDir() {
         let data_dir = `${GLib.get_user_cache_dir()}/${this.metadata.uuid}`;
         if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
@@ -178,6 +189,9 @@ class Eye extends Applet.Applet {
         this.setMouseCirclePropertyUpdate();
 
         this._file_mem_cache = {};
+
+        this._last_mouse_x_pos = undefined;
+        this._last_mouse_y_pos = undefined;
     }
 
     on_applet_removed_from_panel(deleteConfig) {
@@ -197,17 +211,6 @@ class Eye extends Applet.Applet {
         this.setMouseCircleActive(false);
         this.setActive(false);
         this.area.destroy();
-    }
-
-    _get_mouse_circle_icon(dir, mode, click_type, color) {
-        const key = `${dir}${mode}${click_type}${color}`;
-
-        if (this._file_mem_cache[key]) {
-            return this._file_mem_cache[key];
-        }
-
-        this._file_mem_cache[key] = Gio.icon_new_for_string(`${dir}/icons/${mode}_${click_type}_${color}.svg`);
-        return this._file_mem_cache[key];
     }
 
     setActive(enabled) {
@@ -388,7 +391,14 @@ class Eye extends Applet.Applet {
     }
 
     _eyeTimeout() {
-        this.area.queue_repaint();
+        let [mouse_x, mouse_y, mask] = global.get_pointer();
+
+        if (mouse_x !== this._last_mouse_x_pos && mouse_y !== this._last_mouse_y_pos) {
+            this._last_mouse_x_pos = mouse_x;
+            this._last_mouse_y_pos = mouse_y;
+            this.area.queue_repaint();
+        }
+
         return true;
     }
 
@@ -450,9 +460,7 @@ class Eye extends Applet.Applet {
             pupil_rad = iris_rad * 0.4;
 
             max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - this.eye_line_width;
-        }
-
-        if (this.eye_mode === "lids") {
+        } else if (this.eye_mode === "lids") {
             eye_rad = (area_height) / 2;
             iris_rad = eye_rad * 0.5;
             pupil_rad = iris_rad * 0.4;
@@ -484,9 +492,7 @@ class Eye extends Applet.Applet {
         if (this.eye_mode === "bulb") {
             cr.arc(0, 0, eye_rad, 0, 2 * Math.PI);
             cr.stroke();
-        }
-
-        if (this.eye_mode === "lids") {
+        } else if (this.eye_mode === "lids") {
             let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
             let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
             let amp;
