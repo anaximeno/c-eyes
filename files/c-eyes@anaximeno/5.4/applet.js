@@ -210,8 +210,11 @@ class Eye extends Applet.Applet {
 	}
 
 	on_mouse_click_enable_updated(event) {
-		this.setMouseCircleActive(this.mouse_circle_enable);
+		if (this.mouse_circle_enable === false)
+			this.mouse_circle_show = false;
+		this.setMouseCircleActive(this.mouse_circle_show);
 		this.on_property_updated(event);
+		this.area.queue_repaint();
 	}
 
 	destroy() {
