@@ -314,7 +314,7 @@ class Eye extends Applet.Applet {
 				onComplete: function () {
 					Main.uiGroup.remove_child(actor);
 
-					actor.destroy;
+					actor.destroy();
 					actor = null;
 
 					if (self.mouse_pointer) {

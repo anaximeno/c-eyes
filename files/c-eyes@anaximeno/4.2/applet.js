@@ -311,8 +311,10 @@ class Eye extends Applet.Applet {
 					transition: "easeOutQuad",
 					onComplete: function () {
 						Main.uiGroup.remove_child(actor);
-						actor.destroy;
+
+						actor.destroy();
 						actor = null;
+
 						if (self.mouse_pointer) {
 							self.mouse_pointer.gicon = self._get_mouse_circle_icon(self.data_dir, self.mouse_circle_mode, 'default', self.mouse_circle_color);
 						}
