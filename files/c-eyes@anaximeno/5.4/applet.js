@@ -84,13 +84,11 @@ class Eye extends Applet.Applet {
 			this.on_property_updated
 		);
 
-
 		this.settings.bind(
 			"eye-line-width",
 			"eye_line_width",
 			this.on_property_updated
 		);
-
 
 		this.settings.bind(
 			"eye-margin",
@@ -107,7 +105,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-circle-enable",
 			"mouse_circle_enable",
-			this.on_property_updated
+			this.on_mouse_click_enable_updated
 		);
 
 		this.settings.bind(
@@ -201,12 +199,19 @@ class Eye extends Applet.Applet {
 	}
 
 	on_applet_clicked(event) {
-		this._eyeClick(this, event);
+		if (this.mouse_circle_enable) {
+			this._eyeClick(this, event);
+		}
 	}
 
 	on_property_updated(event) {
 		this.setMouseCirclePropertyUpdate();
 		this.setEyePropertyUpdate();
+	}
+
+	on_mouse_click_enable_updated(event) {
+		this.setMouseCircleActive(this.mouse_circle_enable);
+		this.on_property_updated(event);
 	}
 
 	destroy() {
@@ -340,7 +345,7 @@ class Eye extends Applet.Applet {
 
 		if (this.mouse_pointer) {
 			this.mouse_pointer.icon_size = this.mouse_circle_size;
-			this.mouse_pointer.opacity = this.mouse_circle_enable ? this.mouse_circle_opacity : 0;
+			this.mouse_pointer.opacity = this.mouse_circle_always ? this.mouse_circle_opacity : 0;
 			this.mouse_pointer.gicon = this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color);
 		}
 	}
@@ -357,7 +362,7 @@ class Eye extends Applet.Applet {
 			enabled = this.mouse_circle_show;
 		}
 
-		if (this.mouse_pointer && this.mouse_circle_always) {
+		if (this.mouse_pointer) {
 			Main.uiGroup.remove_child(this.mouse_pointer);
 			this.mouse_pointer.destroy();
 			this.mouse_pointer = null;
@@ -377,8 +382,7 @@ class Eye extends Applet.Applet {
 				gicon: this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color),
 			});
 
-			if (this.mouse_circle_always)
-				Main.uiGroup.add_child(this.mouse_pointer);
+			Main.uiGroup.add_child(this.mouse_pointer);
 
 			this.setMouseCirclePropertyUpdate();
 			this._mouseCircleTimeout();
@@ -431,7 +435,7 @@ class Eye extends Applet.Applet {
 				let ty = 0;
 				try {
 					[tx, ty] = obj.get_position();
-				} catch(e) {
+				} catch (e) {
 				}
 				area_x += tx;
 				area_y += ty;
