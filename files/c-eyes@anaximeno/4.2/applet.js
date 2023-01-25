@@ -105,7 +105,7 @@ class Eye extends Applet.Applet {
 
 		this.settings.bind(
 			"mouse-circle-enable",
-			"mouse_circle_always",
+			"mouse_circle_enable",
 			this.on_mouse_click_enable_updated
 		);
 
