@@ -309,7 +309,7 @@ class Eye extends Applet.Applet {
 				scale_x: actor_scale,
 				scale_y: actor_scale,
 				opacity: 0,
-				duration: 500,
+				duration: self.fade_timeout,
 				mode: Clutter.AnimationMode.EASE_OUT_QUAD,
 				onComplete: function () {
 					Main.uiGroup.remove_child(actor);
