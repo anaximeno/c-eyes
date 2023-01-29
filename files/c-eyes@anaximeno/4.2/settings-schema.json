@@ -1,44 +1,44 @@
 {
 	"layout": {
 		"type": "layout",
-		"pages": ["eye", "circle"],
+		"pages": ["eye", "click"],
 		"eye": {
 			"type": "page",
 			"title": "Eye",
 			"sections": ["eye-generic"]
 		},
-		"circle": {
+		"click": {
 			"type": "page",
-			"title": "Circle",
-			"sections": ["circle-generic", "circle-events", "circle-colors"]
+			"title": "Click Animation",
+			"sections": ["click-generic", "click-events", "click-colors"]
 		},
     "eye-generic": {
 			"type": "section",
 			"title": "General configuration",
 			"keys": ["eye-mode", "eye-line-width", "eye-margin", "eye-repaint-interval", "eye-clicked-color"]
 		},
-    "circle-generic": {
+    "click-generic": {
 			"type": "section",
 			"title": "Generic",
-			"keys":  ["mouse-circle-enable", "mouse-circle-mode", "mouse-circle-size"]
+			"keys":  ["mouse-click-enable", "mouse-click-mode", "mouse-click-image-size"]
 		},
-    "circle-events": {
+    "click-events": {
 			"type": "section",
 			"title": "Events",
-			"keys": ["mouse-circle-left-click-enable",
-			         "mouse-circle-middle-click-enable",
-			         "mouse-circle-right-click-enable",
+			"keys": ["mouse-left-click-enable",
+			         "mouse-middle-click-enable",
+			         "mouse-right-click-enable",
 			         "fade-timeout"],
-	   	"dependency": "mouse-circle-enable"
+	   	"dependency": "mouse-click-enable"
 		},
-    "circle-colors": {
+    "click-colors": {
 			"type": "section",
 			"title": "Colors",
-			"keys": ["mouse-circle-left-click-color",
-			         "mouse-circle-middle-click-color",
-			         "mouse-circle-right-click-color",
-			         "mouse-circle-opacity"],
-		  "dependency": "mouse-circle-enable"
+			"keys": ["mouse-left-click-color",
+			         "mouse-middle-click-color",
+			         "mouse-right-click-color",
+			         "mouse-click-opacity"],
+		  "dependency": "mouse-click-enable"
 		}
   },
 	"eye-mode": {
@@ -82,15 +82,15 @@
 		"default": "#ffc107",
 		"description": "Eye Clicked Color"
 	},
-	"mouse-circle-enable": {
+	"mouse-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Enable"
+		"description": "Mouse Click Enable"
 	},
-	"mouse-circle-mode": {
+	"mouse-click-mode": {
 		"type": "combobox",
 		"default": 1,
-		"description": "Mouse Circle Mode",
+		"description": "Mouse Click Mode",
 		"options": {
 			"Simple": 1,
 			"Trigun": 2,
@@ -101,7 +101,7 @@
 			"Claw": 7,
 			"Metropoli": 8,
 			"Flowey": 9,
-			"Egypt": 10,
+			"Kusco": 10,
 			"Ouroboros": 11,
 			"Helix": 12,
 			"Direction": 13,
@@ -111,32 +111,32 @@
 			"Circle": 17,
 			"Gear": 18
 		},
-		"dependency": "mouse-circle-enable"
+		"dependency": "mouse-click-enable"
 	},
-	"mouse-circle-size": {
+	"mouse-click-image-size": {
 		"type": "spinbutton",
 		"default": 70,
 		"min": 20,
 		"max": 120,
 		"step": 5,
 		"units": "px",
-		"description": "Mouse Circle Size",
-		"dependency": "mouse-circle-enable"
+		"description": "Mouse Click Size",
+		"dependency": "mouse-click-enable"
 	},
-	"mouse-circle-left-click-enable": {
+	"mouse-left-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Left Click"
+		"description": "Enable Mouse Left Click"
 	},
-	"mouse-circle-middle-click-enable": {
+	"mouse-middle-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Middle Click"
+		"description": "Enable Mouse Middle Click"
 	},
-	"mouse-circle-right-click-enable": {
+	"mouse-right-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Circle Right Click"
+		"description": "Enable Mouse Right Click"
 	},
 	"fade-timeout": {
 		"type": "spinbutton",
@@ -145,29 +145,29 @@
 		"max": 5000,
 		"step": 100,
 		"units": "ms",
-		"description": "Circle Fade Timeout"
+		"description": "Click Fade Timeout"
 	},
-	"mouse-circle-left-click-color": {
+	"mouse-left-click-color": {
 		"type": "colorchooser",
 		"default": "#ffc107",
-		"description": "Mouse Circle Left Click Color",
-		"dependency": "mouse-circle-left-click-enable"
+		"description": "Mouse Left Click Color",
+		"dependency": "mouse-left-click-enable"
 	},
-	"mouse-circle-middle-click-color": {
+	"mouse-middle-click-color": {
 		"type": "colorchooser",
 		"default": "#ffc107",
-		"description": "Mouse Circle Middle Click Color",
-		"dependency": "mouse-circle-middle-click-enable"
+		"description": "Mouse Middle Click Color",
+		"dependency": "mouse-middle-click-enable"
 	},
-	"mouse-circle-right-click-color": {
+	"mouse-right-click-color": {
 		"type": "colorchooser",
 		"default": "#ffc107",
-		"description": "Mouse Circle Right Click Color",
-		"dependency": "mouse-circle-right-click-enable"
+		"description": "Mouse Right Click Color",
+		"dependency": "mouse-right-click-enable"
 	},
-	"mouse-circle-opacity": {
+	"mouse-click-opacity": {
 		"type": "spinbutton",
-		"description": "Mouse Circle Opacity",
+		"description": "Mouse Click Opacity",
 		"default": 180,
 		"min": 0,
 		"max": 255,
