@@ -65,12 +65,6 @@ class Eye extends Applet.Applet {
 		);
 
 		this.settings.bind(
-			"mouse-circle-repaint-interval",
-			"mouse_circle_repaint_interval",
-			debounce((e) => this.setMouseCircleActive(null), 200)
-		);
-
-		this.settings.bind(
 			"fade-timeout",
 			"fade_timeout",
 			debounce((e) => this.on_property_updated(e), 200)
@@ -101,6 +95,12 @@ class Eye extends Applet.Applet {
 		);
 
 		this.settings.bind(
+			"eye-clicked-color",
+			"eye_clicked_color",
+			this.on_property_updated
+		);
+
+		this.settings.bind(
 			"mouse-circle-size",
 			"mouse_circle_size",
 			debounce((e) => this.on_property_updated(e), 200)
@@ -111,12 +111,6 @@ class Eye extends Applet.Applet {
 			"mouse_circle_enable",
 			this.on_mouse_circle_enable_updated
 		);
-
-		// this.settings.bind(
-		// 	"mouse-circle-always",
-		// 	"mouse_circle_always",
-		// 	this.on_mouse_circle_enable_updated
-		// );
 
 		this.settings.bind(
 			"mouse-circle-left-click-enable",
@@ -133,12 +127,6 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-circle-middle-click-enable",
 			"mouse_circle_middle_click_enable",
-			this.on_property_updated
-		);
-
-		this.settings.bind(
-			"mouse-circle-color",
-			"mouse_circle_color",
 			this.on_property_updated
 		);
 
@@ -272,26 +260,11 @@ class Eye extends Applet.Applet {
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
-	_mouseCircleTimeout() {
-		if (this.mouse_pointer) {
-			let [mouse_x, mouse_y, mask] = global.get_pointer();
-			this.mouse_pointer.set_position(
-				mouse_x - (this.mouse_circle_size / 2),
-				mouse_y - (this.mouse_circle_size / 2)
-			);
-		}
-		return true;
-	}
-
 	_clickAnimation(click_type, color) {
 		let [mouse_x, mouse_y, mask] = global.get_pointer();
 		let actor_scale = this.mouse_circle_size > 20 ? 1.5 : 3;
 
 		let icon = this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, click_type, color);
-
-		if (this.mouse_pointer) {
-			this.mouse_pointer.gicon = icon;
-		}
 
 		let actor = new St.Icon({
 			x: mouse_x - (this.mouse_circle_size / 2),
@@ -316,14 +289,8 @@ class Eye extends Applet.Applet {
 			mode: Clutter.AnimationMode.EASE_OUT_QUAD,
 			onComplete: function () {
 				Main.uiGroup.remove_child(actor);
-
 				actor.destroy();
 				actor = null;
-
-				if (this.mouse_pointer) {
-					this.mouse_pointer.gicon = this._get_mouse_circle_icon(
-						this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color);
-				}
 			}
 		});
 	}
@@ -346,16 +313,9 @@ class Eye extends Applet.Applet {
 	}
 
 	setMouseCirclePropertyUpdate() {
-		this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
 		this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
 		this._mouseCircleCreateDataIcon('right_click', this.mouse_circle_right_click_color);
 		this._mouseCircleCreateDataIcon('middle_click', this.mouse_circle_middle_click_color);
-
-		if (this.mouse_pointer) {
-			this.mouse_pointer.icon_size = this.mouse_circle_size;
-			this.mouse_pointer.opacity = this.mouse_circle_always ? this.mouse_circle_opacity : 0;
-			this.mouse_pointer.gicon = this._get_mouse_circle_icon(this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color);
-		}
 	}
 
 	setEyePropertyUpdate() {
@@ -370,42 +330,10 @@ class Eye extends Applet.Applet {
 			enabled = this.mouse_circle_show;
 		}
 
-		if (this.mouse_pointer) {
-			Main.uiGroup.remove_child(this.mouse_pointer);
-			this.mouse_pointer.destroy();
-			this.mouse_pointer = null;
-		}
-
 		if (enabled) {
-			this._mouse_circle_update_handler = Mainloop.timeout_add(
-				this.mouse_circle_repaint_interval, this._mouseCircleTimeout.bind(this)
-			);
-
-			if (this.mouse_circle_always) {
-				this.mouse_pointer = new St.Icon({
-					reactive: false,
-					can_focus: false,
-					track_hover: false,
-					icon_size: this.mouse_circle_size,
-					opacity: this.mouse_circle_opacity,
-					gicon: this._get_mouse_circle_icon(
-						this.data_dir, this.mouse_circle_mode, 'default', this.mouse_circle_color
-					),
-				});
-
-				Main.uiGroup.add_child(this.mouse_pointer);
-			}
-
 			this.setMouseCirclePropertyUpdate();
-			this._mouseCircleTimeout();
-
 			this._mouseListener.register('mouse');
 		} else {
-			if (this._mouse_circle_update_handler) {
-				Mainloop.source_remove(this._mouse_circle_update_handler);
-				this._mouse_circle_update_handler = null;
-			}
-
 			this._mouseListener.deregister('mouse');
 		}
 	}
@@ -501,7 +429,7 @@ class Eye extends Applet.Applet {
 		let theme_node = this.area.get_theme_node();
 
 		if (this.mouse_circle_show) {
-			let [ok, color] = Clutter.Color.from_string(this.mouse_circle_color);
+			let [ok, color] = Clutter.Color.from_string(this.eye_clicked_color);
 			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
 		} else {
 			Clutter.cairo_set_source_color(cr, theme_node.get_foreground_color());

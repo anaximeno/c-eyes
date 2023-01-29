@@ -15,7 +15,7 @@
     "eye-generic": {
 			"type": "section",
 			"title": "General configuration",
-			"keys": ["eye-mode", "eye-line-width", "eye-margin", "eye-repaint-interval"]
+			"keys": ["eye-mode", "eye-line-width", "eye-margin", "eye-repaint-interval", "eye-clicked-color"]
 		},
     "circle-generic": {
 			"type": "section",
@@ -25,19 +25,16 @@
     "circle-events": {
 			"type": "section",
 			"title": "Events",
-			"keys": ["mouse-circle-always",
-			         "mouse-circle-left-click-enable",
+			"keys": ["mouse-circle-left-click-enable",
 			         "mouse-circle-middle-click-enable",
 			         "mouse-circle-right-click-enable",
-			         "mouse-circle-repaint-interval",
 			         "fade-timeout"],
 	   	"dependency": "mouse-circle-enable"
 		},
     "circle-colors": {
 			"type": "section",
 			"title": "Colors",
-			"keys": ["mouse-circle-color",
-			         "mouse-circle-left-click-color",
+			"keys": ["mouse-circle-left-click-color",
 			         "mouse-circle-middle-click-color",
 			         "mouse-circle-right-click-color",
 			         "mouse-circle-opacity"],
@@ -80,6 +77,11 @@
 		"units": "ms",
 		"description": "Eye Repaint Interval"
 	},
+	"eye-clicked-color": {
+		"type": "colorchooser",
+		"default": "#ffc107",
+		"description": "Eye Clicked Color"
+	},
 	"mouse-circle-enable": {
 		"type": "checkbox",
 		"default": true,
@@ -121,11 +123,6 @@
 		"description": "Mouse Circle Size",
 		"dependency": "mouse-circle-enable"
 	},
-	"mouse-circle-always": {
-		"type": "generic",
-		"description": "Mouse Circle Always",
-		"value": false
-	},
 	"mouse-circle-left-click-enable": {
 		"type": "checkbox",
 		"default": true,
@@ -141,15 +138,6 @@
 		"default": true,
 		"description": "Mouse Circle Right Click"
 	},
-	"mouse-circle-repaint-interval": {
-		"type": "spinbutton",
-		"default": 10,
-		"min": 1,
-		"max": 100,
-		"step": 1,
-		"units": "ms",
-		"description": "Mouse Circle Repaint Interval"
-	},
 	"fade-timeout": {
 		"type": "spinbutton",
 		"default": 1000,
@@ -158,12 +146,6 @@
 		"step": 100,
 		"units": "ms",
 		"description": "Circle Fade Timeout"
-	},
-	"mouse-circle-color": {
-		"type": "colorchooser",
-		"default": "#ffc107",
-		"description": "Mouse Circle Color",
-		"dependency": "mouse-circle-always"
 	},
 	"mouse-circle-left-click-color": {
 		"type": "colorchooser",
