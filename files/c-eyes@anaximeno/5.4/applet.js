@@ -101,6 +101,18 @@ class Eye extends Applet.Applet {
 		);
 
 		this.settings.bind(
+			"iris-clicked-color",
+			"iris_clicked_color",
+			this.on_property_updated
+		);
+
+		this.settings.bind(
+			"pupil-clicked-color",
+			"pupil_clicked_color",
+			this.on_property_updated
+		);
+
+		this.settings.bind(
 			"mouse-click-image-size",
 			"mouse_click_image_size",
 			debounce((e) => this.on_property_updated(e), 200)
@@ -468,12 +480,22 @@ class Eye extends Applet.Applet {
 		cr.rotate(mouse_ang);
 		cr.setLineWidth(this.eye_line_width / iris_rad);
 
+		if (this.mouse_click_show) {
+			let [ok, color] = Clutter.Color.from_string(this.iris_clicked_color);
+			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
+		}
+
 		cr.translate(iris_r * Math.sin(eye_ang), 0);
 		cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
 		cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
 		cr.stroke();
 		cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
 		cr.translate(-iris_r * Math.sin(eye_ang), 0);
+
+		if (this.mouse_click_show) {
+			let [ok, color] = Clutter.Color.from_string(this.pupil_clicked_color);
+			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
+		}
 
 		cr.translate(eye_rad * Math.sin(eye_ang), 0);
 		cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
