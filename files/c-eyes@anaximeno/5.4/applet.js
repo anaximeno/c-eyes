@@ -34,20 +34,24 @@ const EYE_AREA_HEIGHT = 16;
 // Class to create the Eye
 class Eye extends Applet.Applet {
 	_get_mouse_circle_icon(dir, mode, click_type, color) {
-		const key = `${dir}${mode}${click_type}${color}`;
+		let key = `${dir}${mode}${click_type}${color}`;
+		let path = `${dir}/icons/${mode}_${click_type}_${color}.svg`;
 
 		if (this._file_mem_cache[key]) {
 			return this._file_mem_cache[key];
 		}
 
-		this._file_mem_cache[key] = Gio.icon_new_for_string(`${dir}/icons/${mode}_${click_type}_${color}.svg`);
+		this._file_mem_cache[key] = Gio.icon_new_for_string(path);
+
 		return this._file_mem_cache[key];
 	}
 
 	_initDataDir() {
 		let data_dir = `${GLib.get_user_cache_dir()}/${this.metadata.uuid}`;
+
 		if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
 			throw new Error(`Failed to create cache dir at ${data_dir}`);
+
 		return data_dir;
 	}
 
@@ -108,11 +112,11 @@ class Eye extends Applet.Applet {
 			this.on_mouse_circle_enable_updated
 		);
 
-		this.settings.bind(
-			"mouse-circle-always",
-			"mouse_circle_always",
-			this.on_mouse_circle_enable_updated
-		);
+		// this.settings.bind(
+		// 	"mouse-circle-always",
+		// 	"mouse_circle_always",
+		// 	this.on_mouse_circle_enable_updated
+		// );
 
 		this.settings.bind(
 			"mouse-circle-left-click-enable",
@@ -171,9 +175,9 @@ class Eye extends Applet.Applet {
 
 		this.metadata = metadata;
 		this.data_dir = this._initDataDir();
-		this.img_dir = GLib.get_home_dir() + "/.local/share/cinnamon/applets/" + this.metadata.uuid + "/circle";
-		this.area = new St.DrawingArea();
+		this.img_dir = `${metadata.path}/../circle`;
 
+		this.area = new St.DrawingArea();
 		this.actor.add(this.area);
 
 		Atspi.init();
