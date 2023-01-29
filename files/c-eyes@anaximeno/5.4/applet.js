@@ -228,11 +228,6 @@ class Eye extends Applet.Applet {
 			this._eye_update_handler = null;
 		}
 
-		if (this._mouse_circle_update_handler) {
-			Mainloop.source_remove(this._mouse_circle_update_handler);
-			this._mouse_circle_update_handler = null;
-		}
-
 		if (enabled) {
 			this._repaint_handler = this.area.connect("repaint", this._eyeDraw.bind(this));
 
