@@ -1,51 +1,78 @@
 {
 	"layout": {
 		"type": "layout",
-		"pages": ["eye", "click"],
+		"pages": [
+			"eye",
+			"click"
+		],
 		"eye": {
 			"type": "page",
 			"title": "Eye",
-			"sections": ["eye-generic", "eye-colors"]
+			"sections": [
+				"eye-generic",
+				"eye-colors"
+			]
 		},
 		"click": {
 			"type": "page",
 			"title": "Click Animation",
-			"sections": ["click-generic", "click-events", "click-colors"]
+			"sections": [
+				"click-generic",
+				"click-events",
+				"click-colors"
+			]
 		},
-    "eye-generic": {
+		"eye-generic": {
 			"type": "section",
 			"title": "General Configuration",
-			"keys": ["eye-mode", "eye-line-width", "eye-margin", "eye-repaint-interval"]
+			"keys": [
+				"eye-mode",
+				"eye-line-width",
+				"eye-margin",
+				"eye-repaint-interval"
+			]
 		},
-	"eye-colors": {
-		"type": "section",
-		"title": "Eye Colors",
-		"keys": ["eye-clicked-color", "iris-clicked-color", "pupil-clicked-color"]
-	},
-    "click-generic": {
+		"eye-colors": {
+			"type": "section",
+			"title": "Eye Colors",
+			"keys": [
+				"eye-clicked-color",
+				"iris-clicked-color",
+				"pupil-clicked-color"
+			]
+		},
+		"click-generic": {
 			"type": "section",
 			"title": "Generic",
-			"keys":  ["mouse-click-enable", "mouse-click-mode", "mouse-click-image-size"]
+			"keys": [
+				"mouse-click-enable",
+				"mouse-click-mode",
+				"mouse-click-image-size"
+			]
 		},
-    "click-events": {
+		"click-events": {
 			"type": "section",
 			"title": "Events",
-			"keys": ["mouse-left-click-enable",
-			         "mouse-middle-click-enable",
-			         "mouse-right-click-enable",
-			         "fade-timeout"],
-	   	"dependency": "mouse-click-enable"
+			"keys": [
+				"mouse-left-click-enable",
+				"mouse-middle-click-enable",
+				"mouse-right-click-enable",
+				"fade-timeout"
+			],
+			"dependency": "mouse-click-enable"
 		},
-    "click-colors": {
+		"click-colors": {
 			"type": "section",
 			"title": "Colors",
-			"keys": ["mouse-left-click-color",
-			         "mouse-middle-click-color",
-			         "mouse-right-click-color",
-			         "mouse-click-opacity"],
-		  "dependency": "mouse-click-enable"
+			"keys": [
+				"mouse-left-click-color",
+				"mouse-middle-click-color",
+				"mouse-right-click-color",
+				"mouse-click-opacity"
+			],
+			"dependency": "mouse-click-enable"
 		}
-  },
+	},
 	"eye-mode": {
 		"type": "combobox",
 		"default": "lids",
@@ -84,17 +111,17 @@
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#0c75de",
 		"description": "Eye Clicked Color"
 	},
 	"iris-clicked-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#4077BF",
 		"description": "Iris Clicked Color"
 	},
 	"pupil-clicked-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#40BEBF",
 		"description": "Pupil Clicked Color"
 	},
 	"mouse-click-enable": {
@@ -164,19 +191,19 @@
 	},
 	"mouse-left-click-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#0c75de",
 		"description": "Mouse Left Click Color",
 		"dependency": "mouse-left-click-enable"
 	},
 	"mouse-middle-click-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#0c75de",
 		"description": "Mouse Middle Click Color",
 		"dependency": "mouse-middle-click-enable"
 	},
 	"mouse-right-click-color": {
 		"type": "colorchooser",
-		"default": "#ffc107",
+		"default": "#0c75de",
 		"description": "Mouse Right Click Color",
 		"dependency": "mouse-right-click-enable"
 	},
