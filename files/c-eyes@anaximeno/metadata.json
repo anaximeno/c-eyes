@@ -3,6 +3,6 @@
   "uuid": "c-eyes@anaximeno",
   "name": "Cinnamon Eyes",
   "multiversion": true,
-  "description": "An extension for Cinnamon that adds an eye to the panel bar that follows your cursor and displays click animations.",
+  "description": "An applet for Cinnamon that adds an eye to the panel bar that follows your cursor and displays click animations.",
   "url": "https://github.com/anaximeno/c-eyes"
 }
