@@ -3,11 +3,13 @@
 		"type": "layout",
 		"pages": [
 			"eye",
-			"click"
+			"click",
+			"pointer",
+			"idle"
 		],
 		"eye": {
 			"type": "page",
-			"title": "Eye",
+			"title": "Tray Eye",
 			"sections": [
 				"eye-generic",
 				"eye-colors"
@@ -15,11 +17,29 @@
 		},
 		"click": {
 			"type": "page",
-			"title": "Click Animation",
+			"title": "Click Tracker",
 			"sections": [
 				"click-generic",
 				"click-events",
 				"click-colors"
+			]
+		},
+		"pointer": {
+			"type": "page",
+			"title": "Pointer Tracker",
+			"sections": [
+				"pointer-generic",
+				"pointer-events",
+				"pointer-colors"
+			]
+		},
+		"idle": {
+			"type": "page",
+			"title": "Idle Tracker",
+			"sections": [
+				"idle-generic",
+				"idle-events",
+				"idle-colors"
 			]
 		},
 		"eye-generic": {
@@ -45,32 +65,89 @@
 			"type": "section",
 			"title": "Generic",
 			"keys": [
-				"mouse-click-enable",
-				"mouse-click-mode",
-				"mouse-click-image-size"
+				"click-enable",
+				"click-image",
+				"click-tween-mode",
+				"click-min-size",
+				"click-image-size"
 			]
 		},
 		"click-events": {
 			"type": "section",
 			"title": "Events",
 			"keys": [
-				"mouse-left-click-enable",
-				"mouse-middle-click-enable",
-				"mouse-right-click-enable",
-				"fade-timeout"
+				"left-click-enable",
+				"middle-click-enable",
+				"right-click-enable",
+				"click-duration"
 			],
-			"dependency": "mouse-click-enable"
+			"dependency": "click-enable"
 		},
 		"click-colors": {
 			"type": "section",
 			"title": "Colors",
 			"keys": [
-				"mouse-left-click-color",
-				"mouse-middle-click-color",
-				"mouse-right-click-color",
-				"mouse-click-opacity"
+				"left-click-color",
+				"middle-click-color",
+				"right-click-color",
+				"click-opacity"
 			],
-			"dependency": "mouse-click-enable"
+			"dependency": "click-enable"
+		},
+		"pointer-generic": {
+			"type": "section",
+			"title": "Generic",
+			"keys":  [
+				"pointer-enable",
+				"pointer-image",
+				"pointer-image-size"
+			]
+		},
+		"pointer-events": {
+			"type": "section",
+			"title": "Events",
+			"keys": [
+				"pointer-repaint-interval"
+			],
+			"dependency": "pointer-enable"
+		},
+		"pointer-colors": {
+			"type": "section",
+			"title": "Colors",
+			"keys": [
+				"pointer-color",
+				"pointer-opacity"
+			],
+			"dependency": "pointer-enable"
+		},
+		"idle-generic": {
+			"type": "section",
+			"title": "Generic",
+			"keys":  [
+				"idle-enable",
+				"idle-image",
+				"idle-tween-mode",
+				"idle-image-size"
+			]
+		},
+		"idle-events": {
+			"type": "section",
+			"title": "Events",
+			"keys": [
+				"idle-delay",
+				"idle-duration",
+				"idle-frequency"
+			],
+			"dependency": "idle-enable"
+		},
+		"idle-colors": {
+			"type": "section",
+			"title": "Colors",
+			"keys": [
+				"idle-color",
+				"idle-opacity"
+			],
+			"dependency": "idle-enable"
 		}
 	},
 	"eye-mode": {
@@ -111,7 +188,7 @@
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",
-		"default": "#0c75de",
+		"default": "#fcfcfc",
 		"description": "Eye Clicked Color"
 	},
 	"iris-clicked-color": {
@@ -121,18 +198,18 @@
 	},
 	"pupil-clicked-color": {
 		"type": "colorchooser",
-		"default": "#40BEBF",
+		"default": "#333333",
 		"description": "Pupil Clicked Color"
 	},
-	"mouse-click-enable": {
+	"click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Click Enable"
+		"description": "Enable"
 	},
-	"mouse-click-mode": {
+	"click-image": {
 		"type": "combobox",
 		"default": 1,
-		"description": "Mouse Click Mode",
+		"description": "Click Image",
 		"options": {
 			"Simple": 1,
 			"Trigun": 2,
@@ -153,66 +230,236 @@
 			"Circle": 17,
 			"Gear": 18
 		},
-		"dependency": "mouse-click-enable"
+		"dependency": "click-enable"
 	},
-	"mouse-click-image-size": {
+	"click-tween-mode": {
+		"type": "tween",
+		"default": "easeInExpo",
+		"description": "Animation Type",
+		"dependency": "click-enable"
+	},
+	"click-min-size": {
 		"type": "spinbutton",
 		"default": 60,
-		"min": 20,
-		"max": 120,
-		"step": 5,
+		"min": 16,
+		"max": 80,
+		"step": 2,
 		"units": "px",
-		"description": "Mouse Click Size",
-		"dependency": "mouse-click-enable"
+		"description": "Min. Size",
+		"dependency": "click-enable"
 	},
-	"mouse-left-click-enable": {
+	"click-image-size": {
+		"type": "spinbutton",
+		"default": 100,
+		"min": 80,
+		"max": 200,
+		"step": 2,
+		"units": "px",
+		"description": "Max. Size",
+		"dependency": "click-enable"
+	},
+	"left-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Left Click"
+		"description": "Enable Left Click"
 	},
-	"mouse-middle-click-enable": {
+	"middle-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Middle Click"
+		"description": "Enable Middle Click"
 	},
-	"mouse-right-click-enable": {
+	"right-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Right Click"
+		"description": "Enable Right Click"
 	},
-	"fade-timeout": {
+	"click-duration": {
 		"type": "spinbutton",
 		"default": 1000,
 		"min": 100,
 		"max": 5000,
 		"step": 100,
 		"units": "ms",
-		"description": "Click Fade Timeout"
+		"description": "Animation Duration"
 	},
-	"mouse-left-click-color": {
+	"left-click-color": {
 		"type": "colorchooser",
-		"default": "#0c75de",
-		"description": "Mouse Left Click Color",
-		"dependency": "mouse-left-click-enable"
+		"default": "#a40000",
+		"description": "Left Click Color",
+		"dependency": "left-click-enable"
 	},
-	"mouse-middle-click-color": {
+	"middle-click-color": {
 		"type": "colorchooser",
-		"default": "#40BEBF",
-		"description": "Mouse Middle Click Color",
-		"dependency": "mouse-middle-click-enable"
+		"default": "#105028",
+		"description": "Middle Click Color",
+		"dependency": "middle-click-enable"
 	},
-	"mouse-right-click-color": {
+	"right-click-color": {
 		"type": "colorchooser",
-		"default": "#4077BF",
-		"description": "Mouse Right Click Color",
-		"dependency": "mouse-right-click-enable"
+		"default": "#1e4b87",
+		"description": "Right Click Color",
+		"dependency": "right-click-enable"
 	},
-	"mouse-click-opacity": {
+	"click-opacity": {
 		"type": "spinbutton",
-		"description": "Mouse Click Opacity",
+		"description": "Initial Opacity",
 		"default": 255,
 		"min": 5,
 		"max": 255,
 		"step": 5
+	},
+	"pointer-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Enable"
+	},
+	"pointer-image": {
+		"type": "combobox",
+		"default": 1,
+		"description": "Tracker Image",
+		"options": {
+			"Simple": 1,
+			"Trigun": 2,
+			"Nublo": 3,
+			"Risco": 4,
+			"Wolf": 5,
+			"Pincel": 6,
+			"Claw": 7,
+			"Metropoli": 8,
+			"Flowey": 9,
+			"Kusco": 10,
+			"Ouroboros": 11,
+			"Helix": 12,
+			"Direction": 13,
+			"Spinks": 14,
+			"Thatch": 15,
+			"Cotton": 16,
+			"Circle": 17,
+			"Gear": 18
+		},
+		"dependency": "pointer-enable"
+	},
+	"pointer-image-size": {
+		"type": "spinbutton",
+		"default": 70,
+		"min": 20,
+		"max": 200,
+		"step": 5,
+		"units": "px",
+		"description": "Tracker Size",
+		"dependency": "pointer-enable"
+	},
+	"pointer-repaint-interval": {
+		"type": "spinbutton",
+		"default": 10,
+		"min": 1,
+		"max": 100,
+		"step": 1,
+		"units": "ms",
+		"description": "Tracker Frequency"
+	},
+	"pointer-color": {
+		"type": "colorchooser",
+		"default": "#c17d11",
+		"description": "Tracker Color"
+	},
+	"pointer-opacity": {
+		"type": "spinbutton",
+		"description": "Tracker Opacity",
+		"default": 180,
+		"min": 0,
+		"max": 255,
+		"step": 5
+	},
+	"idle-enable": {
+		"type": "checkbox",
+		"default": true,
+		"description": "Enable"
+	},
+	"idle-image": {
+		"type": "combobox",
+		"default": 1,
+		"description": "Idle Image",
+		"options": {
+			"Simple": 1,
+			"Trigun": 2,
+			"Nublo": 3,
+			"Risco": 4,
+			"Wolf": 5,
+			"Pincel": 6,
+			"Claw": 7,
+			"Metropoli": 8,
+			"Flowey": 9,
+			"Kusco": 10,
+			"Ouroboros": 11,
+			"Helix": 12,
+			"Direction": 13,
+			"Spinks": 14,
+			"Thatch": 15,
+			"Cotton": 16,
+			"Circle": 17,
+			"Gear": 18
+		},
+		"dependency": "idle-enable"
+	},
+	"idle-tween-mode": {
+		"type": "tween",
+		"default": "easeOutQuad",
+		"description": "Animation Type",
+		"dependency": "idle-enable"
+	},
+	"idle-image-size": {
+		"type": "spinbutton",
+		"default": 70,
+		"min": 20,
+		"max": 250,
+		"step": 5,
+		"units": "px",
+		"description": "Idle Locator Size",
+		"dependency": "idle-enable"
+	},
+	"idle-delay": {
+		"type": "spinbutton",
+		"default": 5,
+		"min": 1,
+		"max": 60,
+		"step": 0.5,
+		"units": "sec",
+		"description": "Idle Delay"
+	},
+	"idle-duration": {
+		"type": "spinbutton",
+		"default": 1000,
+		"min": 100,
+		"max": 5000,
+		"step": 100,
+		"units": "ms",
+		"description": "Animation Duration"
+	},
+	"idle-frequency": {
+		"type": "spinbutton",
+		"default": 2.5,
+		"min": 0.5,
+		"max": 10,
+		"step": 0.5,
+		"units": "sec",
+		"description": "Animation Frequency"
+	},
+	"idle-color": {
+		"type": "colorchooser",
+		"default": "#c4158e",
+		"description": "Idle Locator Color"
+	},
+	"idle-opacity": {
+		"type": "spinbutton",
+		"description": "Idle Locator Opacity",
+		"default": 180,
+		"min": 10,
+		"max": 255,
+		"step": 5
+	},
+	"mouse-enable": {
+	 "type": "generic",
+	 "default": false
 	}
 }
