@@ -383,6 +383,7 @@ class Eye extends Applet.Applet {
 			});
 
 			Main.uiGroup.add_child(this.mouse_pointer);
+			Main.panelManager.lowerActorBelowPanels(this.mouse_pointer, null);
 
 			this.setMouseCirclePropertyUpdate();
 			this._mouseCircleTimeout();
