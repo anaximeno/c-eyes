@@ -22,21 +22,44 @@ const Main = imports.ui.main;
 const Settings = imports.ui.settings;
 const Tweener = imports.ui.tweener;
 
+const Gettext = imports.gettext;
 const Mainloop = imports.mainloop;
 const Util = imports.misc.util;
-/* for testing purposes currently */
-const SignalManager = imports.misc.signalManager;
-const Meta = imports.gi.Meta;
-const Cinnamon = imports.gi.Cinnamon;
-/*									*/
+
 const { Atspi, Clutter, GLib, Gio, St, Gdk } = imports.gi;
 
 const Keymap = Gdk.Keymap.get_for_display(Gdk.Display.get_default());
 const { debounce } = require("./helper.js");
 
+const UUID = "c-eyes@anaximeno"; // used for translations; must keep in sync with metadata.uuid !
 const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
 
+const MBL = _("left");
+const MBM = _("middle");
+const MBR = _("right");
+const BTN = _("button");
+const BTNS = _("buttons");
+const NOBTNS = _("no buttons");
+const HINT = _("(Press <b>Ctrl</b> to temporarily\ndisable pointer tracker)");
+const HINTOFF = _("(<b>Ctrl</b>/<b>Shift</b>/<b>Ctrl</b>+<b>Shift</b> + <b>click</b>\nto toggle tracker functions)");
+const CTRK = _("Click tracker is");
+const PTRK = _("Pointer tracker is");
+const ILOC = _("Idle locator is");
+const ENA = _("enabled"); // singular, according to CTRK/PTRK/ILOC gender, if any
+const DISS = _("disabled"); // idem above
+const FOR = _("for");
+const AMTRK = _("<b>All</b> mouse tracking <b>disabled</b>");
+
+Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
+
+function _(text) {
+	let locText = Gettext.dgettext(UUID, text);
+	if (locText == text) {
+		locText = window._(text);
+	}
+	return locText;
+}
 
 // Class to create the Eye
 class Eye extends Applet.Applet {
@@ -93,7 +116,13 @@ class Eye extends Applet.Applet {
 			"eye_repaint_interval",
 			debounce((e) => this.setActive(true), 200)
 		);
-/* Eye Colors */
+/* EYE- Events */
+		this.settings.bind(
+			"start-mode",
+			"start_mode",
+			null
+		);
+/* EYE - Colors */
 		this.settings.bind(
 			"eye-clicked-color",
 			"eye_clicked_color",
@@ -206,13 +235,13 @@ class Eye extends Applet.Applet {
 			"pointer_image_size",
 			debounce((e) => this.on_property_updated(e), 200)
 		);
-
+/* POINTER TRACKER- Events */
 		this.settings.bind(
 			"pointer-repaint-interval",
 			"pointer_repaint_interval",
 			debounce((e) => this.setPointerActive(null), 200)
 		);
-
+/* POINTER TRACKER- Colors */
 		this.settings.bind(
 			"pointer-color",
 			"pointer_color",
@@ -248,7 +277,7 @@ class Eye extends Applet.Applet {
 			"idle_image_size",
 			debounce((e) => this.on_property_updated(e), 200)
 		);
-/* IDLE TRACKER PAGE - Events */
+/* IDLE TRACKER - Events */
 		this.settings.bind(
 			"idle-delay",
 			"idle_delay",
@@ -266,7 +295,7 @@ class Eye extends Applet.Applet {
 			"idle_frequency",
 			null
 		);
-/* IDLE TRACKER PAGE - Colors */
+/* IDLE TRACKER - Colors */
 		this.settings.bind(
 			"idle-color",
 			"idle_color",
@@ -320,14 +349,13 @@ class Eye extends Applet.Applet {
 		this._last_mouse_x_pos = undefined;
 		this._last_mouse_y_pos = undefined;
 		[this._mx, this._my] = global.get_pointer();
+		if (this.start_mode < 2) this.mouse_enable = !!this.start_mode;
 		this.toggle(this.mouse_enable);
 		this._applet_tooltip._tooltip.set_style("text-align: left;");
 		this.setTooltip();
-		this.tti = Util.setTimeout(() => this.showTooltip(false), 2300);
 	}
 
 	_onFSChange() {
-//		Meta.later_add(Meta.LaterType.CHECK_FULLSCREEN, () => this._onFullscreen());
 		let mIdx = global.screen.get_current_monitor();
 		this.state = global.screen.get_monitor_in_fullscreen(mIdx);
 		if (this.state) {
@@ -339,7 +367,6 @@ class Eye extends Applet.Applet {
 			this.idle_enable = this.lastState;
 			this.on_idle_enable_updated(true);
 		}
-		global.log("FS change to " + state.toString());
 	}
 
 	on_applet_removed_from_panel(deleteConfig) {
@@ -353,25 +380,28 @@ class Eye extends Applet.Applet {
 	}
 
 	on_applet_clicked(event) {
-		let mod1 = event.get_state() & 1;	// test for <Shift> down
-		let mod2 = event.get_state() & 4;	// test for <Ctrl> down
-		let mod = event.get_state() & 5;	// test for <Shift>/<Ctrl> down
-		if (mod==1) {					// Shift+click => toggle click tracker
+		let mod = event.get_state() & 5;	// test for <Shift>(1)/<Ctrl>(4) down
+		if (mod==1) {						// Shift+click => toggle click tracker
 			this.click_enable = !this.click_enable;
 			this.on_click_enable_updated(event);
-		} else if (mod==4) {			// Ctrl+click => toggle pointer tracker
+		} else if (mod==4) {				// Ctrl+click => toggle pointer tracker
 			this.pointer_enable = !this.pointer_enable;
 			this.on_pointer_enable_updated(event);
-		} else if (mod==5) {	// Ctrl+Shift+click => toggle idle tracker
+		} else if (mod==5) {				// Ctrl+Shift+click => toggle idle tracker
 			this.idle_enable = !this.idle_enable;
 			this.on_idle_enable_updated(event);
-		} else if (this.click_enable || this.pointer_enable || this.idle_enable) {
+		}
+		if ((mod!=0 && !this.mouse_enable) ||
+			(mod==0 && (this.click_enable || this.pointer_enable || this.idle_enable))) {
 			this.mouse_enable = !this.mouse_enable;
 			this.toggle(this.mouse_enable);
-			this.setTooltip();
+		} else if (!(this.click_enable || this.pointer_enable || this.idle_enable)) {
+			this.mouse_enable = false;
+			this.toggle(this.mouse_enable);
 		}
+		this.setTooltip(true);
 	}
-// This one may be more convenient for quick toggling the idle state
+// This one may be more convenient for quick toggling the idle locator state
 	on_applet_middle_clicked(event) {
 		if (this.mouse_enable) {
 			this.idle_enable = !this.idle_enable;
@@ -420,8 +450,7 @@ class Eye extends Applet.Applet {
 		this.setClickActive(false);
 		this.setActive(false);
 		this.area.destroy();
-		Meta.later_remove(this.fullcheck);
-//		try {Atspi.exit();} catch(e){global.logError(e);}
+//		Atspi.exit();
 	}
 
 	setActive(enabled) {
@@ -505,7 +534,6 @@ class Eye extends Applet.Applet {
 	_killTween() {
 		this._killIdle();
 		if (this.circle_actor) {
-//			Tweener.pauseTweens(this.circle_actor);
 			Tweener.removeTweens(this.circle_actor);
 			Main.uiGroup.remove_child(this.circle_actor);
 			this.circle_actor.destroy();
@@ -552,7 +580,7 @@ class Eye extends Applet.Applet {
 				scale_y: click_type === 'idle' ? 0 : actor_scale,
 				opacity: click_type === 'idle' ? this.idle_opacity/2 : 10,
 				time: (click_type === 'idle' ? this.idle_duration : this.click_duration) / 1000,
-				transition: click_type === 'idle' ? this.idle_tween_mode : this.click_tween_mode, //"easeInExpo", // easeOutQuad
+				transition: click_type === 'idle' ? this.idle_tween_mode : this.click_tween_mode,
 				onComplete: function () {
 					Main.uiGroup.remove_child(this.circle_actor);
 					this.circle_actor.destroy();
@@ -580,8 +608,6 @@ class Eye extends Applet.Applet {
 						this._mx - (this.pointer_image_size / 2),
 						this._my - (this.pointer_image_size / 2)
 					);
-//					let target = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, this._mx, this._my);
-//					if (this.pointer_show && !(target.mabeGet("_delegate") instanceof Panel.Panel))
 					if (this.pointer_show)
 						this.st = Util.setTimeout(() => this._delay(this.pointer_show), 1);
 				}
@@ -615,15 +641,8 @@ class Eye extends Applet.Applet {
 		this.mouse_pointer.show();
 	}
 
-	_context() {
-		this.mouse_pointer.hide();
-		Util.clearTimeout(this.ct); this.ct = null;
-		Atspi.generate_mouse_event(this._mx, this._my, "b3r")
-		Atspi.generate_mouse_event(this._mx, this._my, "b3p")
-	}
-
 	_onKey(event) {
-// This function reacts to aALL modifier keys.
+// This function reacts to ALL modifier keys.
 // Caps=2, Num=16, Scroll=32 | Shift=1, Ctrl=4, Alt=8, Win=64, AltGr=128
 		let m = event.get_modifier_state();
 		if (((m & 201) != 0) || (this.lastState === m)) return false;
@@ -687,20 +706,18 @@ class Eye extends Applet.Applet {
 				this.mouse_pointer.destroy();
 			}
 
-//			if (this.pointer_enable) {
-				this.mouse_pointer = new St.Icon({
-					reactive: false,
-					can_focus: false,
-					hover: false,
-					track_hover: false,
-					icon_size: this.pointer_image_size,
-					opacity: this.pointer_opacity,
-					gicon: this._get_icon(this.data_dir,
-						this.pointer_image, 'pointer')
-				});
-				Main.uiGroup.add_child(this.mouse_pointer);
-				this.mouse_pointer.set_important(false);
-//			}
+			this.mouse_pointer = new St.Icon({
+				reactive: false,
+				can_focus: false,
+				hover: false,
+				track_hover: false,
+				icon_size: this.pointer_image_size,
+				opacity: this.pointer_opacity,
+				gicon: this._get_icon(this.data_dir,
+					this.pointer_image, 'pointer')
+			});
+			Main.uiGroup.add_child(this.mouse_pointer);
+			this.mouse_pointer.set_important(false);
 
 			this.setPointerPropertyUpdate();
 			this._mouseCircleTimeout();
@@ -710,11 +727,6 @@ class Eye extends Applet.Applet {
 			);
 			if (this.pointer_show) this.mouse_pointer.show();
 		} else {
-/*			if (this._mouse_circle_update_handler) {
-				Util.clearInterval(this._mouse_circle_update_handler);
-				this._mouse_circle_update_handler = null;
-			}
-*/
 			if (this.mouse_pointer) {
 				Main.uiGroup.remove_child(this.mouse_pointer);
 				this.mouse_pointer.destroy();
@@ -746,42 +758,38 @@ class Eye extends Applet.Applet {
 		this.area.queue_repaint();
 	}
 
-	setTooltip() {
+	setTooltip(show=false) {
 		let b = "• "; // bullet char U+2022
-		let c1 = this.left_click_enable ? "<b>left</b>" : "";
-		let c2 = this.middle_click_enable ? (c1 ? ", " : "") + "<b>middle</b>" : "";
-		let c3 = this.right_click_enable ? (c1 || c2 ? ", " : "") + "<b>right</b> " : "";
-		let p = `${c1}${c2}${c3}` == "" ? "no buttons" : "buttons";
-		let mc = this.click_show ?
-			`Click tracker <b>enabled</b> for:\n${c1}${c2}${c3}${p}` : "Click tracker <b>disabled</b>";
-		let ml = this.pointer_show ?
-			"Position tracker <b>enabled</b>" : "Position tracker <b>disabled</b>";
-		let mi = this.idle_show ?
-			"Idle locator <b>enabled</b>" : "Idle locator <b>disabled</b>";
+		let c1 = this.left_click_enable ? `<b>${MBL}</b>` : "";
+		let c2 = this.middle_click_enable ? (c1 ? ", " : "") + `<b>${MBM}</b>` : "";
+		let c3 = this.right_click_enable ? (c1 || c2 ? ", " : "") + `<b>${MBR}</b>` : "";
+		let bpl = (c1 && c2) || (c1 && c3) || (c2 && c3) ? ` ${BTNS}` : ` ${BTN}`;
+		let p = `${c1}${c2}${c3}` == "" ? NOBTNS : bpl;
+		let hint = this.pointer_show ? `\n\n<i>${HINT}</i>` : "", hint2 = `<i>${HINTOFF}</i>`;
+		let mc = CTRK + (this.click_show ?
+			` <b>${ENA}</b> ${FOR}:\n\t${c1}${c2}${c3}${p}` : ` <b>${DISS}</b>`);
+		let ml = PTRK + (this.pointer_show ?
+			` <b>${ENA}</b>` : ` <b>${DISS}</b>`);
+		let mi = ILOC + (this.idle_show ?
+			` <b>${ENA}</b>` : ` <b>${DISS}</b>`);
 		let ttmsg = !this.mouse_enable ?
-			"<b>All</b> mouse tracking <b>disabled</b>" :
-			`${b}${mc}\n${b}${ml}\n${b}${mi}`;
-		ttmsg += "\n\n<i>(Press <b>Ctrl</b> to temporarily\ndisable pointer tracker)</i>";
+			`${AMTRK}\n\n${hint2}` : `${b}${mc}\n${b}${ml}\n${b}${mi}${hint}`;
 		this._applet_tooltip._tooltip.get_clutter_text().set_markup(ttmsg);
 		this._applet_tooltip._tooltip.clutter_text.set_markup(ttmsg); // yes, it has to be duplicated!
-		if (!this.state)
+		if (!this.state && show)
 			this.tt = Util.setTimeout(() => this.showTooltip(true), 300);
-		else this._tooltip.hide();
 	}
 
 	showTooltip(visible) {
-		if (this.tti) { Util.clearTimeout(this.tti); this.tti = null; }
 		if (this.tt) { Util.clearTimeout(this.tt); this.tt = null; }
-//		(visible === true) ? this._applet_tooltip._tooltip.show() : this._applet_tooltip._tooltip.hide();
 		if (visible === true) {
 			this._applet_tooltip._tooltip.show();
-			this.tt = Util.setTimeout(() => this.hideTooltip(), 3500);
 		} else this.tt = Util.setTimeout(() => this.hideTooltip(), 10);
 	}
 
 	hideTooltip() {
 		if (this.tt) { Util.clearTimeout(this.tt); this.tt = null; }
-		this._applet_tooltip._tooltip.hide(); this._tooltip.hide();
+		this._applet_tooltip._tooltip.hide();
 	}
 
 	_eyeDraw(area) {

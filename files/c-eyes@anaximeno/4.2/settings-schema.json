@@ -12,6 +12,7 @@
 			"title": "Tray Eye",
 			"sections": [
 				"eye-generic",
+				"eye-events",
 				"eye-colors"
 			]
 		},
@@ -52,9 +53,16 @@
 				"eye-repaint-interval"
 			]
 		},
+		"eye-events": {
+			"type": "section",
+			"title": "Events",
+			"keys": [
+				"start-mode"
+			]
+		},
 		"eye-colors": {
 			"type": "section",
-			"title": "Eye Colors",
+			"title": "Colors",
 			"keys": [
 				"eye-clicked-color",
 				"iris-clicked-color",
@@ -185,6 +193,17 @@
 		"step": 5,
 		"units": "ms",
 		"description": "Eye Repaint Interval"
+	},
+	"start-mode": {
+		"type": "combobox",
+		"default": 0,
+		"description": "Start mode",
+		"options": {
+			"disabled": 0,
+			"enabled": 1,
+			"last state": 2
+		},
+		"tooltip": "Choose how this applet will run at system start"
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",
