@@ -19,10 +19,11 @@
 
 const { Clutter } = imports.gi;
 
-class EyeMode {    
-    /** @type Object */
-    static _colorCache = {};
-    
+
+let _colorCache = {};
+
+
+class EyeMode {
     /** @type Eye */
     eye;
 
@@ -40,15 +41,14 @@ class EyeMode {
      * @returns [boolean, Clutter.Color | null]
      */
     getColor(color) {
-        if (EyeMode._colorCache[color]) {
-            return [true, EyeMode._colorCache[color]];
+        if (_colorCache[color]) {
+            return [true, _colorCache[color]];
         }
 
         let [ok, c] = Clutter.Color.from_string(color);
 
-        EyeMode._colorCache[color] = ok ? c : null;
-
-        return [ok, EyeMode._colorCache[color]];
+        _colorCache[color] = ok ? c : null;
+        return [ok, _colorCache[color]];
     }
 
     /**
@@ -199,10 +199,10 @@ class BulbMode extends EyeMode {
     drawEye(area) {
         let [area_width, area_height] = area.get_surface_size();
         let [area_x, area_y] = this.areaPos();
-        
+
         area_x += area_width / 2;
         area_y += area_height / 2;
-        
+
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         mouse_x -= area_x;
