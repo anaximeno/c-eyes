@@ -19,14 +19,9 @@
 
 const { Clutter } = imports.gi;
 
-
 let _colorCache = {};
 
-
 class EyeMode {
-    /** @type Eye */
-    eye;
-
     /**
      * Create a new instance of the eye mode
      * @param {Eye} eye An instance of the class eye
