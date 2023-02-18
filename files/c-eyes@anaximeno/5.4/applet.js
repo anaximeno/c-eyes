@@ -17,23 +17,23 @@
  */
 'use strict';
 
-const Applet = imports.ui.applet;
 const Main = imports.ui.main;
-const Settings = imports.ui.settings;
-
 const Mainloop = imports.mainloop;
+const Settings = imports.ui.settings;
+const Applet = imports.ui.applet;
 
 const { Atspi, Clutter, GLib, Gio, St } = imports.gi;
 
+const { EyeModeFactory } = require("./eyeModes.js");
 const { debounce } = require("./helper.js");
+
 
 const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
 
 
-// Class to create the Eye
 class Eye extends Applet.Applet {
-	_get_mouse_circle_icon(dir, mode, click_type, color) {
+	_getMouseCircleIcon(dir, mode, click_type, color) {
 		let key = `${dir}${mode}${click_type}${color}`;
 		let path = `${dir}/icons/${mode}_${click_type}_${color}.svg`;
 
@@ -42,7 +42,6 @@ class Eye extends Applet.Applet {
 		}
 
 		this._file_mem_cache[key] = Gio.icon_new_for_string(path);
-
 		return this._file_mem_cache[key];
 	}
 
@@ -61,13 +60,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"eye-repaint-interval",
 			"eye_repaint_interval",
-			debounce((e) => this.setActive(true), 200)
+			debounce((e) => this.setActive(true), 300)
 		);
 
 		this.settings.bind(
 			"fade-timeout",
 			"fade_timeout",
-			debounce((e) => this.on_property_updated(e), 200)
+			debounce((e) => this.on_property_updated(e), 300)
 		);
 
 		this.settings.bind(
@@ -85,13 +84,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"eye-line-width",
 			"eye_line_width",
-			debounce((e) => this.on_property_updated(e), 200)
+			debounce((e) => this.on_property_updated(e), 300)
 		);
 
 		this.settings.bind(
 			"eye-margin",
 			"eye_margin",
-			debounce((e) => this.on_property_updated(e), 200)
+			debounce((e) => this.on_property_updated(e), 300)
 		);
 
 		this.settings.bind(
@@ -115,7 +114,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-image-size",
 			"mouse_click_image_size",
-			debounce((e) => this.on_property_updated(e), 200)
+			debounce((e) => this.on_property_updated(e), 300)
 		);
 
 		this.settings.bind(
@@ -163,7 +162,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-opacity",
 			"mouse_click_opacity",
-			debounce((e) => this.on_property_updated(e), 200)
+			debounce((e) => this.on_property_updated(e), 300)
 		);
 	}
 
@@ -204,7 +203,9 @@ class Eye extends Applet.Applet {
 
 	on_applet_clicked(event) {
 		if (this.mouse_click_enable) {
-			this._eyeClick(this, event);
+			this.mouse_click_show = !this.mouse_click_show;
+			this.setMouseCircleActive(this.mouse_click_show);
+			this.area.queue_repaint();
 		}
 	}
 
@@ -261,9 +262,11 @@ class Eye extends Applet.Applet {
 
 		// Save content to cache dir
 		let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_click_mode}_${name}_${color}.svg`);
+
 		if (!dest.query_exists(null)) {
 			dest.create(Gio.FileCreateFlags.NONE, null);
 		}
+
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
@@ -271,7 +274,7 @@ class Eye extends Applet.Applet {
 		let [mouse_x, mouse_y, mask] = global.get_pointer();
 		let actor_scale = this.mouse_click_image_size > 20 ? 1.5 : 3;
 
-		let icon = this._get_mouse_circle_icon(this.data_dir, this.mouse_click_mode, click_type, color);
+		let icon = this._getMouseCircleIcon(this.data_dir, this.mouse_click_mode, click_type, color);
 
 		let actor = new St.Icon({
 			x: mouse_x - (this.mouse_click_image_size / 2),
@@ -346,7 +349,7 @@ class Eye extends Applet.Applet {
 	}
 
 	_eyeTimeout() {
-		let [mouse_x, mouse_y, mask] = global.get_pointer();
+		let [mouse_x, mouse_y, _] = global.get_pointer();
 
 		if (mouse_x !== this._last_mouse_x_pos || mouse_y !== this._last_mouse_y_pos) {
 			this._last_mouse_x_pos = mouse_x;
@@ -357,154 +360,8 @@ class Eye extends Applet.Applet {
 		return true;
 	}
 
-	_eyeClick(actor, event) {
-		let button = 1;
-
-		if (button === 1 /* Left button */) {
-			this.mouse_click_show = !this.mouse_click_show;
-			this.setMouseCircleActive(this.mouse_click_show);
-			this.area.queue_repaint();
-		}
-
-		if (button === 2 /* Right button */) {
-			//
-		}
-	}
-
 	_eyeDraw(area) {
-		let get_pos = function (self) {
-			let area_x = 0;
-			let area_y = 0;
-
-			let obj = self.area;
-			do {
-				let tx = 0;
-				let ty = 0;
-				try {
-					[tx, ty] = obj.get_position();
-				} catch (e) {
-				}
-				area_x += tx;
-				area_y += ty;
-				obj = obj.get_parent();
-			}
-			while (obj);
-
-			return [area_x, area_y];
-		};
-
-		let [area_width, area_height] = area.get_surface_size();
-		let [area_x, area_y] = get_pos(this);
-		area_x += area_width / 2;
-		area_y += area_height / 2;
-
-		let [mouse_x, mouse_y, mask] = global.get_pointer();
-		mouse_x -= area_x;
-		mouse_y -= area_y;
-
-		let mouse_ang = Math.atan2(mouse_y, mouse_x);
-		let mouse_rad = Math.sqrt(mouse_x * mouse_x + mouse_y * mouse_y);
-
-		let eye_rad;
-		let iris_rad;
-		let pupil_rad;
-		let max_rad;
-
-		if (this.eye_mode === "bulb") {
-			eye_rad = (area_height) / 2.3;
-			iris_rad = eye_rad * 0.6;
-			pupil_rad = iris_rad * 0.4;
-
-			max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - this.eye_line_width;
-		} else if (this.eye_mode === "lids") {
-			eye_rad = (area_height) / 2;
-			iris_rad = eye_rad * 0.5;
-			pupil_rad = iris_rad * 0.4;
-
-			max_rad = eye_rad * (Math.pow(Math.cos(mouse_ang), 4) * 0.5 + 0.25)
-		}
-
-		if (mouse_rad > max_rad)
-			mouse_rad = max_rad;
-
-		let iris_arc = Math.asin(iris_rad / eye_rad);
-		let iris_r = eye_rad * Math.cos(iris_arc);
-
-		let eye_ang = Math.atan(mouse_rad / iris_r);
-
-		let cr = area.get_context();
-		let theme_node = this.area.get_theme_node();
-
-		if (this.mouse_click_show) {
-			let [ok, color] = Clutter.Color.from_string(this.eye_clicked_color);
-			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
-		} else {
-			Clutter.cairo_set_source_color(cr, theme_node.get_foreground_color());
-		}
-
-		cr.translate(area_width * 0.5, area_height * 0.5);
-		cr.setLineWidth(this.eye_line_width);
-
-		if (this.eye_mode === "bulb") {
-			cr.arc(0, 0, eye_rad, 0, 2 * Math.PI);
-			cr.stroke();
-		} else if (this.eye_mode === "lids") {
-			let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
-			let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
-			let amp;
-
-			let top_lid = 0.8;
-			let bottom_lid = 0.6;
-
-			amp = eye_rad * top_lid;
-			cr.moveTo(-eye_rad, 0);
-			cr.curveTo(x_def - iris_rad, y_def + amp,
-				x_def + iris_rad, y_def + amp, eye_rad, 0);
-
-			amp = eye_rad * bottom_lid;
-			cr.curveTo(x_def + iris_rad, y_def - amp,
-				x_def - iris_rad, y_def - amp, -eye_rad, 0);
-			cr.stroke();
-
-			amp = eye_rad * top_lid;
-			cr.moveTo(-eye_rad, 0);
-			cr.curveTo(x_def - iris_rad, y_def + amp,
-				x_def + iris_rad, y_def + amp, eye_rad, 0);
-
-			amp = eye_rad * bottom_lid;
-			cr.curveTo(x_def + iris_rad, y_def - amp,
-				x_def - iris_rad, y_def - amp, -eye_rad, 0);
-			cr.clip();
-		}
-
-		cr.rotate(mouse_ang);
-		cr.setLineWidth(this.eye_line_width / iris_rad);
-
-		if (this.mouse_click_show) {
-			let [ok, color] = Clutter.Color.from_string(this.iris_clicked_color);
-			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
-		}
-
-		cr.translate(iris_r * Math.sin(eye_ang), 0);
-		cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
-		cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
-		cr.stroke();
-		cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
-		cr.translate(-iris_r * Math.sin(eye_ang), 0);
-
-		if (this.mouse_click_show) {
-			let [ok, color] = Clutter.Color.from_string(this.pupil_clicked_color);
-			Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
-		}
-
-		cr.translate(eye_rad * Math.sin(eye_ang), 0);
-		cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
-		cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
-		cr.fill();
-
-		cr.save();
-		cr.restore();
-		cr.$dispose();
+		EyeModeFactory.createEyeMode(this, this.eye_mode).drawEye(area);
 	}
 }
 
