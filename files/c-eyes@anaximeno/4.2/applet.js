@@ -27,6 +27,7 @@ const Mainloop = imports.mainloop;
 const { Atspi, GLib, Gio, St } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
+const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
 const { debounce } = require("./helper.js");
 
 
@@ -274,41 +275,13 @@ class Eye extends Applet.Applet {
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
-	_clickAnimation(click_type, color) {
-		let [mouse_x, mouse_y, mask] = global.get_pointer();
-		let actor_scale = this.mouse_click_image_size > 20 ? 1.5 : 3;
+	_clickAnimation(clickType, color) {
+		let icon = this._getMouseCircleIcon(this.data_dir, this.mouse_click_mode, clickType, color);
+		ClickAnimationModeFactory.createClickAnimationMode(this, "expansion").animateClick(icon);
+	}
 
-		let icon = this._getMouseCircleIcon(this.data_dir, this.mouse_click_mode, click_type, color);
-
-		let actor = new St.Icon({
-			x: mouse_x - (this.mouse_click_image_size / 2),
-			y: mouse_y - (this.mouse_click_image_size / 2),
-			reactive: false,
-			can_focus: false,
-			track_hover: false,
-			icon_size: this.mouse_click_image_size,
-			opacity: this.mouse_click_opacity,
-			gicon: icon
-		});
-
-		Main.uiGroup.add_child(actor);
-
-		Tweener.addTween(actor,
-			{
-				x: mouse_x - (this.mouse_click_image_size * actor_scale / 2),
-				y: mouse_y - (this.mouse_click_image_size * actor_scale / 2),
-				scale_x: actor_scale,
-				scale_y: actor_scale,
-				opacity: 0,
-				time: this.fade_timeout / 1000,
-				transition: "easeOutQuad",
-				onComplete: function () {
-					Main.uiGroup.remove_child(actor);
-					actor.destroy();
-					actor = null;
-				},
-				onCompleteScope: this
-			});
+	_eyeDraw(area) {
+		EyeModeFactory.createEyeMode(this, this.eye_mode).drawEye(area);
 	}
 
 	_mouseCircleClick(event) {
@@ -364,10 +337,6 @@ class Eye extends Applet.Applet {
 		}
 
 		return true;
-	}
-
-	_eyeDraw(area) {
-		EyeModeFactory.createEyeMode(this, this.eye_mode).drawEye(area);
 	}
 }
 

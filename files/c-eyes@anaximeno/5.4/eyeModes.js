@@ -289,8 +289,6 @@ class EyeModeFactory {
      * @returns EyeMode subclass
      */
     static createEyeMode(eye, mode) {
-        // Add new eye modes to this method
-
         switch (mode) {
             case "bulb":
                 return new BulbMode(eye);
