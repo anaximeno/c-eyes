@@ -179,7 +179,7 @@ class Eye extends Applet.Applet {
 		this.area = new St.DrawingArea();
 		this.actor.add(this.area);
 
-		Atspi.init();
+		// Atspi.init();
 
 		this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
@@ -252,6 +252,32 @@ class Eye extends Applet.Applet {
 		}
 	}
 
+	setMouseCirclePropertyUpdate() {
+		this._mouseCircleCreateDataIcon('left_click', this.mouse_left_click_color);
+		this._mouseCircleCreateDataIcon('right_click', this.mouse_right_click_color);
+		this._mouseCircleCreateDataIcon('middle_click', this.mouse_middle_click_color);
+	}
+
+	setEyePropertyUpdate() {
+		const margin = 2 * this.eye_margin;
+		this.area.set_width(EYE_AREA_WIDTH + margin);
+		this.area.set_height(EYE_AREA_HEIGHT + margin);
+		this.area.queue_repaint();
+	}
+
+	setMouseCircleActive(enabled) {
+		if (enabled == null) {
+			enabled = this.mouse_click_show;
+		}
+
+		if (enabled) {
+			this.setMouseCirclePropertyUpdate();
+			this._mouseListener.register('mouse');
+		} else {
+			this._mouseListener.deregister('mouse');
+		}
+	}
+
 	_mouseCircleCreateDataIcon(name, color) {
 		let source = Gio.File.new_for_path(`${this.img_dir}/${this.mouse_click_mode}.svg`);
 		let [l_success, contents] = source.load_contents(null);
@@ -293,32 +319,6 @@ class Eye extends Applet.Applet {
 				if (this.mouse_right_click_enable)
 					this._clickAnimation('right_click', this.mouse_right_click_color);
 				break;
-		}
-	}
-
-	setMouseCirclePropertyUpdate() {
-		this._mouseCircleCreateDataIcon('left_click', this.mouse_left_click_color);
-		this._mouseCircleCreateDataIcon('right_click', this.mouse_right_click_color);
-		this._mouseCircleCreateDataIcon('middle_click', this.mouse_middle_click_color);
-	}
-
-	setEyePropertyUpdate() {
-		const margin = 2 * this.eye_margin;
-		this.area.set_width(EYE_AREA_WIDTH + margin);
-		this.area.set_height(EYE_AREA_HEIGHT + margin);
-		this.area.queue_repaint();
-	}
-
-	setMouseCircleActive(enabled) {
-		if (enabled == null) {
-			enabled = this.mouse_click_show;
-		}
-
-		if (enabled) {
-			this.setMouseCirclePropertyUpdate();
-			this._mouseListener.register('mouse');
-		} else {
-			this._mouseListener.deregister('mouse');
 		}
 	}
 
