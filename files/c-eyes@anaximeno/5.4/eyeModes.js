@@ -19,10 +19,7 @@
 
 const { Clutter } = imports.gi;
 
-class EyeMode {    
-    /** @type Object */
-    static _colorCache = {};
-    
+class EyeMode {
     /** @type Eye */
     eye;
 
@@ -32,23 +29,6 @@ class EyeMode {
      */
     constructor(eye) {
         this.eye = eye;
-    }
-
-    /**
-     * Get's the color from the color string
-     * @param {String} color Hexadecimal color string (e.g. #ffffff)
-     * @returns [boolean, Clutter.Color | null]
-     */
-    getColor(color) {
-        if (EyeMode._colorCache[color]) {
-            return [true, EyeMode._colorCache[color]];
-        }
-
-        let [ok, c] = Clutter.Color.from_string(color);
-
-        EyeMode._colorCache[color] = ok ? c : null;
-
-        return [ok, EyeMode._colorCache[color]];
     }
 
     /**
@@ -80,15 +60,20 @@ class EyeMode {
         return [area_x, area_y];
     }
 
-    drawEye(area) {
+    /**
+     * Draws the eye on the panel
+     * @param {St.DrawingArea} area The area on repaint
+     * @param {object} options Drawing options
+     */
+    drawEye(area, options) {
         // Implemented by sub-classes
     };
 }
 
 class EyelidMode extends EyeMode {
-    drawEye(area) {
-        let [area_width, area_height] = area.get_surface_size();
+    drawEye(area, options) {
         let [area_x, area_y] = this.areaPos();
+        let [area_width, area_height] = area.get_surface_size();
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         area_x += area_width / 2;
@@ -115,26 +100,10 @@ class EyelidMode extends EyeMode {
         let eye_ang = Math.atan(mouse_rad / iris_r);
 
         let cr = area.get_context();
-        let theme_node = this.eye.area.get_theme_node();
-
-        let eye_color = theme_node.get_foreground_color();
-        let iris_color = theme_node.get_foreground_color();
-        let pupil_color = theme_node.get_foreground_color();
-
-        if (this.eye.mouse_click_show) {
-            let [ok, color] = this.getColor(this.eye.eye_clicked_color);
-            eye_color = ok ? color : eye_color;
-
-            [ok, color] = this.getColor(this.eye.iris_clicked_color);
-            iris_color = ok ? color : iris_color;
-
-            [ok, color] = this.getColor(this.eye.pupil_clicked_color);
-            pupil_color = ok ? color : pupil_color;
-        }
 
         // -- Drawing the base of the eye
 
-        Clutter.cairo_set_source_color(cr, eye_color);
+        Clutter.cairo_set_source_color(cr, options.eye_color);
 
         cr.translate(area_width * 0.5, area_height * 0.5);
         cr.setLineWidth(this.eye.eye_line_width);
@@ -171,7 +140,7 @@ class EyelidMode extends EyeMode {
         cr.rotate(mouse_ang);
         cr.setLineWidth(this.eye.eye_line_width / iris_rad);
 
-        Clutter.cairo_set_source_color(cr, iris_color);
+        Clutter.cairo_set_source_color(cr, options.iris_color);
 
         cr.translate(iris_r * Math.sin(eye_ang), 0);
         cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
@@ -182,7 +151,7 @@ class EyelidMode extends EyeMode {
 
         // -- Drawing the pupil of the eye
 
-        Clutter.cairo_set_source_color(cr, pupil_color);
+        Clutter.cairo_set_source_color(cr, options.pupil_color);
 
         cr.translate(eye_rad * Math.sin(eye_ang), 0);
         cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
@@ -196,13 +165,13 @@ class EyelidMode extends EyeMode {
 }
 
 class BulbMode extends EyeMode {
-    drawEye(area) {
-        let [area_width, area_height] = area.get_surface_size();
+    drawEye(area, options) {
         let [area_x, area_y] = this.areaPos();
-        
+        let [area_width, area_height] = area.get_surface_size();
+
         area_x += area_width / 2;
         area_y += area_height / 2;
-        
+
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         mouse_x -= area_x;
@@ -226,26 +195,10 @@ class BulbMode extends EyeMode {
         let eye_ang = Math.atan(mouse_rad / iris_r);
 
         let cr = area.get_context();
-        let theme_node = this.eye.area.get_theme_node();
-
-        let eye_color = theme_node.get_foreground_color();
-        let iris_color = theme_node.get_foreground_color();
-        let pupil_color = theme_node.get_foreground_color();
-
-        if (this.eye.mouse_click_show) {
-            let [ok, color] = this.getColor(this.eye.eye_clicked_color);
-            eye_color = ok ? color : eye_color;
-
-            [ok, color] = this.getColor(this.eye.iris_clicked_color);
-            iris_color = ok ? color : iris_color;
-
-            [ok, color] = this.getColor(this.eye.pupil_clicked_color);
-            pupil_color = ok ? color : pupil_color;
-        }
 
         // -- Drawing the base of the eye
 
-        Clutter.cairo_set_source_color(cr, eye_color);
+        Clutter.cairo_set_source_color(cr, options.eye_color);
 
         cr.translate(area_width * 0.5, area_height * 0.5);
         cr.setLineWidth(this.eye.eye_line_width);
@@ -257,7 +210,7 @@ class BulbMode extends EyeMode {
         cr.rotate(mouse_ang);
         cr.setLineWidth(this.eye.eye_line_width / iris_rad);
 
-        Clutter.cairo_set_source_color(cr, iris_color);
+        Clutter.cairo_set_source_color(cr, options.iris_color);
 
         cr.translate(iris_r * Math.sin(eye_ang), 0);
         cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
@@ -268,7 +221,7 @@ class BulbMode extends EyeMode {
 
         // -- Drawing the pupil of the eye
 
-        Clutter.cairo_set_source_color(cr, pupil_color);
+        Clutter.cairo_set_source_color(cr, options.pupil_color);
 
         cr.translate(eye_rad * Math.sin(eye_ang), 0);
         cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);

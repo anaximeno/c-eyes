@@ -21,7 +21,7 @@ const Mainloop = imports.mainloop;
 const Settings = imports.ui.settings;
 const Applet = imports.ui.applet;
 
-const { Atspi, GLib, Gio, St } = imports.gi;
+const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
 const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
@@ -179,8 +179,6 @@ class Eye extends Applet.Applet {
 		this.area = new St.DrawingArea();
 		this.actor.add(this.area);
 
-		// Atspi.init();
-
 		this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
 		this.setActive(true);
@@ -193,12 +191,6 @@ class Eye extends Applet.Applet {
 
 	on_applet_removed_from_panel(deleteConfig) {
 		this.destroy();
-	}
-
-	on_applet_reloaded(deleteConfig) {
-		this._file_mem_cache = {};
-		this._last_mouse_x_pos = undefined;
-		this._last_mouse_y_pos = undefined;
 	}
 
 	on_applet_clicked(event) {
@@ -302,7 +294,26 @@ class Eye extends Applet.Applet {
 	}
 
 	_eyeDraw(area) {
-		EyeModeFactory.createEyeMode(this, this.eye_mode).drawEye(area);
+		const foreground_color = this.area.get_theme_node().get_foreground_color();
+
+		let options = {
+			eye_color: foreground_color,
+			iris_color: foreground_color,
+			pupil_color: foreground_color,
+		};
+
+		if (this.mouse_click_show) {
+			let [ok, color] = Clutter.Color.from_string(this.eye_clicked_color);
+			options.eye_color = ok ? color : options.eye_color;
+
+			[ok, color] = Clutter.Color.from_string(this.iris_clicked_color);
+			options.iris_color = ok ? color : options.iris_color;
+
+			[ok, color] = Clutter.Color.from_string(this.pupil_clicked_color);
+			options.pupil_color = ok ? color : options.pupil_color;
+		}
+
+		EyeModeFactory.createEyeMode(this, this.eye_mode).drawEye(area, options);
 	}
 
 	_mouseCircleClick(event) {

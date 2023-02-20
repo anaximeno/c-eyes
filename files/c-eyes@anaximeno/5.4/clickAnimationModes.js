@@ -36,14 +36,15 @@ class ClickAnimationMode {
     /**
      * Animates the click into the screen
      * @param {GIcon} icon The icon that will be animated
+     * @param {object} options Additional options used while during the drawing of the eye
      */
-    animateClick(icon) {
+    animateClick(icon, options = {}) {
         // Implemented by sub-classes
     }
 }
 
 class ExpansionClickAnimationMode extends ClickAnimationMode {
-    animateClick(icon) {
+    animateClick(icon, options = {}) {
         let actor_scale = this.eye.mouse_click_image_size > 20 ? 1.5 : 3;
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
