@@ -185,8 +185,8 @@ class Eye extends Applet.Applet {
 		this.setMouseCirclePropertyUpdate();
 
 		this._file_mem_cache = {};
-		this._last_mouse_x_pos = undefined;
-		this._last_mouse_y_pos = undefined;
+		this._last_mouse_x = undefined;
+		this._last_mouse_y = undefined;
 	}
 
 	on_applet_removed_from_panel(deleteConfig) {
@@ -336,9 +336,9 @@ class Eye extends Applet.Applet {
 	_eyeTimeout() {
 		let [mouse_x, mouse_y, _] = global.get_pointer();
 
-		if (mouse_x !== this._last_mouse_x_pos || mouse_y !== this._last_mouse_y_pos) {
-			this._last_mouse_x_pos = mouse_x;
-			this._last_mouse_y_pos = mouse_y;
+		if (mouse_x !== this._last_mouse_x || mouse_y !== this._last_mouse_y) {
+			this._last_mouse_x = mouse_x;
+			this._last_mouse_y = mouse_y;
 			this.area.queue_repaint();
 		}
 
