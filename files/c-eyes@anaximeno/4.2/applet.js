@@ -21,7 +21,7 @@ const Applet = imports.ui.applet;
 const Settings = imports.ui.settings;
 const Mainloop = imports.mainloop;
 
-const { Atspi, GLib, Gio, St } = imports.gi;
+const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
 const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
