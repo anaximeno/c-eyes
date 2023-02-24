@@ -280,9 +280,9 @@ class Eye extends Applet.Applet {
 	updateTooltip() {
 		if (this.mouse_click_enable) {
 			if (!this.mouse_click_show) {
-				this.set_applet_tooltip(this._("Click to activate the effects."));
+				this.set_applet_tooltip(this._("Click to activate effects."));
 			} else {
-				this.set_applet_tooltip(this._("Click to deactivate the effects."));
+				this.set_applet_tooltip(this._("Click to deactivate effects."));
 			}
 		} else {
 			this.set_applet_tooltip(this._("Effects disabled."));
