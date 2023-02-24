@@ -169,7 +169,7 @@ class Eye extends Applet.Applet {
 	constructor(metadata, orientation, panelHeight, instanceId) {
 		super(orientation, panelHeight, instanceId);
 
-		this.setAllowedLayout(Applet.AllowedLayout.HORIZONTAL);
+		this.setAllowedLayout(Applet.AllowedLayout.BOTH);
 		this._setupSettings(metadata.uuid, instanceId);
 
 		this.metadata = metadata;
@@ -187,6 +187,7 @@ class Eye extends Applet.Applet {
 
 		this.setActive(true);
 		this.setMouseCirclePropertyUpdate();
+		this.updateTooltip();
 
 		this._file_mem_cache = {};
 		this._last_mouse_x = undefined;
@@ -202,10 +203,12 @@ class Eye extends Applet.Applet {
 			this.mouse_click_show = !this.mouse_click_show;
 			this.setMouseCircleActive(this.mouse_click_show);
 			this.area.queue_repaint();
+			this.updateTooltip();
 		}
 	}
 
 	on_property_updated(event) {
+		this.updateTooltip();
 		this.setMouseCirclePropertyUpdate();
 		this.setEyePropertyUpdate();
 	}
@@ -274,6 +277,18 @@ class Eye extends Applet.Applet {
 		}
 	}
 
+	updateTooltip() {
+		if (this.mouse_click_enable) {
+			if (!this.mouse_click_show) {
+				this.set_applet_tooltip(this._("Click to activate the effects."));
+			} else {
+				this.set_applet_tooltip(this._("Click to deactivate the effects."));
+			}
+		} else {
+			this.set_applet_tooltip(this._("Effects disabled."));
+		}
+	}
+
 	_mouseCircleCreateDataIcon(name, color) {
 		let source = Gio.File.new_for_path(`${this.img_dir}/${this.mouse_click_mode}.svg`);
 		let [l_success, contents] = source.load_contents(null);
@@ -336,7 +351,7 @@ class Eye extends Applet.Applet {
 	}
 
 	_eyeTimeout() {
-		let [mouse_x, mouse_y, _] = global.get_pointer();
+		let [mouse_x, mouse_y, mask] = global.get_pointer();
 
 		if (mouse_x !== this._last_mouse_x || mouse_y !== this._last_mouse_y) {
 			this._last_mouse_x = mouse_x;
@@ -345,6 +360,17 @@ class Eye extends Applet.Applet {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Translates the text to the user locale, if available.
+	 * @param {String} text Text to be traslated
+	 * @returns String
+	 */
+	_(text) {
+		if (this._uuid === null)
+			this._uuid = this.metadata.uuid || "c-eyes@anaximeno";
+		return super._(text);
 	}
 }
 
