@@ -175,7 +175,8 @@
 			"Bounce Back": "bounce-back",
 			"Retract": "retract",
 			"Expand": "expand"
-		}
+		},
+		"dependency": "mouse-click-enable"
 	},
 	"mouse-left-click-enable": {
 		"type": "checkbox",
