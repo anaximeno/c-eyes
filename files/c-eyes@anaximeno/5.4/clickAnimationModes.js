@@ -99,8 +99,8 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
             opacity: 0,
             x: mouse_x,
             y: mouse_y,
-            scale_x: 0.1,
-            scale_y: 0.1,
+            scale_x: 0,
+            scale_y: 0,
             duration: this.eye.fade_timeout,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
@@ -125,7 +125,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             can_focus: false,
             track_hover: false,
             icon_size: this.eye.mouse_click_image_size,
-            opacity: this.eye.mouse_click_opacity,
+            opacity: 0,
             gicon: icon
         });
 
@@ -136,6 +136,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             y: mouse_y - (this.eye.mouse_click_image_size / 2),
             scale_x: 1,
             scale_y: 1,
+            opacity: this.eye.mouse_click_opacity,
             duration: this.eye.fade_timeout / 2,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
@@ -191,7 +192,7 @@ class BlinkClickAnimationMode extends ClickAnimationMode {
 class ClickAnimationModeFactory {
     /**
      * Returns an click animation mode depending on the given name
-     * @param {Eye} eye An instance of the class eye
+     * @param {Eye} eye An instance of the class Eye
      * @param {String} mode Click Animation mode name to create
      * @returns ClickAnimationMode subclass
      */

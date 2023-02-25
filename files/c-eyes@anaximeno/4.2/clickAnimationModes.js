@@ -97,8 +97,8 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
             opacity: 0,
             x: mouse_x,
             y: mouse_y,
-            scale_x: 0.1,
-            scale_y: 0.1,
+            scale_x: 0,
+            scale_y: 0,
             time: this.eye.fade_timeout / 1000,
             transition: "easeOutQuad",
             onComplete: () => {
