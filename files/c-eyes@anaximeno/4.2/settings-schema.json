@@ -81,6 +81,7 @@
 		"description": "Mode",
 		"options": {
 			"Lids": "lids",
+			"Lids Filled": "lids-fill",
 			"Bulb": "bulb"
 		}
 	},
