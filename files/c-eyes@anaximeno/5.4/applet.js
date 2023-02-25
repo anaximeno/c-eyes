@@ -188,7 +188,7 @@ class Eye extends Applet.Applet {
 
 		this.metadata = metadata;
 		this.data_dir = this._initDataDir();
-		this.img_dir = `${metadata.path}/../circle`;
+		this.img_dir = `${metadata.path}/../images`;
 
 		this.area = new St.DrawingArea();
 		this.actor.add(this.area);

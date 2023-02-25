@@ -188,10 +188,10 @@ class Eye extends Applet.Applet {
 
 		this.metadata = metadata;
 		this.data_dir = this._initDataDir();
-		this.img_dir = `${metadata.path}/../circle`;
+		this.img_dir = `${metadata.path}/../images`;
 
-		if (!Gio.File.new_for_path(this.img_dir).query_exists(null)) {
-			this.img_dir = `${GLib.get_home_dir()}/.local/share/cinnamon/applets/${this.metadata.uuid}/circle`;
+		if (GLib.file_test(this.img_dir, GLib.FileTest.IS_DIR)) {
+			this.img_dir = `${GLib.get_home_dir()}/.local/share/cinnamon/applets/${this.metadata.uuid}/images`;
 		}
 
 		this.area = new St.DrawingArea();
