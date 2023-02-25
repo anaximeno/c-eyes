@@ -177,7 +177,7 @@ class Eye extends Applet.Applet {
 			"eye-activate-by-default",
 			"eye_activate_by_default",
 			this.on_eye_activated_by_default_updated
-		)
+		);
 	}
 
 	constructor(metadata, orientation, panelHeight, instanceId) {

@@ -172,6 +172,12 @@ class Eye extends Applet.Applet {
 			"click_animation_mode",
 			null,
 		);
+
+		this.settings.bind(
+			"eye-activate-by-default",
+			"eye_activate_by_default",
+			this.on_eye_activated_by_default_updated
+		);
 	}
 
 	constructor(metadata, orientation, panelHeight, instanceId) {
@@ -197,9 +203,16 @@ class Eye extends Applet.Applet {
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
 
+		this.eye_activated = this.eye_activate_by_default;
+
 		this.setActive(true);
 		this.setMouseCirclePropertyUpdate();
+		this.setMouseCircleActive(this.mouse_click_show);
 		this.updateTooltip();
+	}
+
+	get mouse_click_show() {
+		return this.mouse_click_enable && this.eye_activated;
 	}
 
 	on_applet_removed_from_panel(deleteConfig) {
@@ -207,28 +220,38 @@ class Eye extends Applet.Applet {
 	}
 
 	on_applet_clicked(event) {
+		this.eye_activated = !this.eye_activated;
+
 		if (this.mouse_click_enable) {
-			this.mouse_click_show = !this.mouse_click_show;
 			this.setMouseCircleActive(this.mouse_click_show);
-			this.area.queue_repaint();
-			this.updateTooltip();
 		}
+
+		this.area.queue_repaint();
+		this.updateTooltip();
 	}
 
 	on_property_updated(event, opts = { mouse_property_update: true, eye_property_update: true }) {
-		this.updateTooltip();
 		if (opts.mouse_property_update || true) /* Update by default */
 			this.setMouseCirclePropertyUpdate();
 		if (opts.eye_property_update || true) /* Update by default */
 			this.setEyePropertyUpdate();
+		this.updateTooltip();
 	}
 
 	on_mouse_click_enable_updated(event) {
-		if (this.mouse_click_enable === false)
-			this.mouse_click_show = false;
-		this.setMouseCircleActive(this.mouse_click_show);
 		this.on_property_updated(event);
+		this.setMouseCircleActive(this.mouse_click_show);
 		this.area.queue_repaint();
+	}
+
+	on_eye_activated_by_default_updated(event) {
+		this.on_property_updated(event);
+
+		if (this.eye_activate_by_default) {
+			this.eye_activated = this.eye_activate_by_default;
+			this.setMouseCircleActive(this.mouse_click_show);
+			this.area.queue_repaint();
+		}
 	}
 
 	destroy() {
@@ -279,23 +302,21 @@ class Eye extends Applet.Applet {
 			enabled = this.mouse_click_show;
 		}
 
+		this._mouseListener.deregister('mouse');
+
 		if (enabled) {
 			this.setMouseCirclePropertyUpdate();
 			this._mouseListener.register('mouse');
-		} else {
-			this._mouseListener.deregister('mouse');
 		}
 	}
 
 	updateTooltip() {
-		if (this.mouse_click_enable) {
-			if (!this.mouse_click_show) {
-				this.set_applet_tooltip(this._("Click to activate effects."));
-			} else {
-				this.set_applet_tooltip(this._("Click to deactivate effects."));
-			}
+		let complement = this.mouse_click_enable ? this._("effects enabled") : this._("effects disabled");
+
+		if (this.eye_activated) {
+			this.set_applet_tooltip(this._("Click to deactivate") + ` (${complement})`);
 		} else {
-			this.set_applet_tooltip(this._("Effects disabled."));
+			this.set_applet_tooltip(this._("Click to activate") + ` (${complement})`);
 		}
 	}
 
@@ -337,7 +358,7 @@ class Eye extends Applet.Applet {
 			pupil_color: foreground_color
 		};
 
-		if (this.mouse_click_show) {
+		if (this.eye_activated) {
 			let [ok, color] = Clutter.Color.from_string(this.eye_clicked_color);
 			options.eye_color = ok ? color : options.eye_color;
 
