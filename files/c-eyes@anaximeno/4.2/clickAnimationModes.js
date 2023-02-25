@@ -111,7 +111,7 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
     }
 }
 
-class RetractionClickAnimationMode extends ClickAnimationMode {
+class BounceBackClickAnimationMode extends ClickAnimationMode {
     animateClick(icon, options = {}) {
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
@@ -131,7 +131,6 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
         Main.uiGroup.add_child(actor);
 
         Tweener.addTween(actor, {
-            opacity: 0,
             x: mouse_x - (this.eye.mouse_click_image_size / 2),
             y: mouse_y - (this.eye.mouse_click_image_size / 2),
             scale_x: 1,
