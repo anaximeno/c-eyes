@@ -187,7 +187,7 @@
 		"max": 5000,
 		"step": 100,
 		"units": "ms",
-		"description": "Click Fade Timeout"
+		"description": "Fade Timeout"
 	},
 	"mouse-left-click-color": {
 		"type": "colorchooser",
