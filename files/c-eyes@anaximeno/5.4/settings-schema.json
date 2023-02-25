@@ -29,7 +29,8 @@
 				"eye-mode",
 				"eye-line-width",
 				"eye-margin",
-				"eye-repaint-interval"
+				"eye-repaint-interval",
+				"eye-activate-by-default"
 			]
 		},
 		"eye-colors": {
@@ -109,6 +110,11 @@
 		"step": 5,
 		"units": "ms",
 		"description": "Repaint Interval"
+	},
+	"eye-activate-by-default": {
+		"type": "checkbox",
+		"default": false,
+		"description": "Activate By Default"
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",
