@@ -78,6 +78,116 @@ class ExpansionClickAnimationMode extends ClickAnimationMode {
     }
 }
 
+class RetractionClickAnimationMode extends ClickAnimationMode {
+    animateClick(icon, options = {}) {
+        let [mouse_x, mouse_y, _] = global.get_pointer();
+
+        let actor = new St.Icon({
+            x: mouse_x - (this.eye.mouse_click_image_size / 2),
+            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+            icon_size: this.eye.mouse_click_image_size,
+            opacity: this.eye.mouse_click_opacity,
+            gicon: icon
+        });
+
+        Main.uiGroup.add_child(actor);
+
+        actor.ease({
+            opacity: 0,
+            x: mouse_x,
+            y: mouse_y,
+            scale_x: 0.1,
+            scale_y: 0.1,
+            duration: this.eye.fade_timeout,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                Main.uiGroup.remove_child(actor);
+                actor.destroy();
+                actor = null;
+            }
+        });
+    }
+}
+
+class BounceBackClickAnimationMode extends ClickAnimationMode {
+    animateClick(icon, options = {}) {
+        let [mouse_x, mouse_y, mask] = global.get_pointer();
+
+        let actor = new St.Icon({
+            x: mouse_x,
+            y: mouse_y,
+            scale_x: 0.1,
+            scale_y: 0.1,
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+            icon_size: this.eye.mouse_click_image_size,
+            opacity: this.eye.mouse_click_opacity,
+            gicon: icon
+        });
+
+        Main.uiGroup.add_child(actor);
+
+        actor.ease({
+            x: mouse_x - (this.eye.mouse_click_image_size / 2),
+            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            scale_x: 1,
+            scale_y: 1,
+            duration: this.eye.fade_timeout / 2,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                actor.ease({
+                    opacity: 0,
+                    x: mouse_x,
+                    y: mouse_y,
+                    scale_x: 0,
+                    scale_y: 0,
+                    duration: this.eye.fade_timeout / 2,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onComplete: () => {
+                        Main.uiGroup.remove_child(actor);
+                        actor.destroy();
+                        actor = null;
+                    }
+                });
+            }
+        });
+    }
+}
+
+class BlinkClickAnimationMode extends ClickAnimationMode {
+    animateClick(icon, options = {}) {
+        let [mouse_x, mouse_y, mask] = global.get_pointer();
+
+        let actor = new St.Icon({
+            x: mouse_x - (this.eye.mouse_click_image_size / 2),
+            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+            icon_size: this.eye.mouse_click_image_size,
+            opacity: this.eye.mouse_click_opacity,
+            gicon: icon
+        });
+
+        Main.uiGroup.add_child(actor);
+
+        actor.ease({
+            opacity: 0,
+            duration: this.eye.fade_timeout,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                Main.uiGroup.remove_child(actor);
+                actor.destroy();
+                actor = null;
+            }
+        });
+    }
+}
+
 class ClickAnimationModeFactory {
     /**
      * Returns an click animation mode depending on the given name
@@ -87,9 +197,15 @@ class ClickAnimationModeFactory {
      */
     static createClickAnimationMode(eye, mode) {
         switch (mode) {
-            case "expansion":
-            default:
+            case "bounce-back":
+                return new BounceBackClickAnimationMode(eye);
+            case "retract":
+                return new RetractionClickAnimationMode(eye);
+            case "expand":
                 return new ExpansionClickAnimationMode(eye);
+            case "blink":
+            default:
+                return new BlinkClickAnimationMode(eye);
         }
     }
 }

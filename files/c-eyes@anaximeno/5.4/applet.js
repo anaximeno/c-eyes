@@ -33,16 +33,18 @@ const EYE_AREA_HEIGHT = 16;
 
 
 class Eye extends Applet.Applet {
-	_getMouseCircleIcon(dir, mode, click_type, color) {
+	_getIconCached(dir, mode, click_type, color) {
 		let key = `${dir}${mode}${click_type}${color}`;
 		let path = `${dir}/icons/${mode}_${click_type}_${color}.svg`;
 
 		if (this._file_mem_cache[key]) {
 			return this._file_mem_cache[key];
+		} else if (GLib.file_test(path, GLib.FileTest.IS_REGULAR)) {
+			this._file_mem_cache[key] = Gio.icon_new_for_string(path);
+			return this._file_mem_cache[key];
+		} else {
+			return null;
 		}
-
-		this._file_mem_cache[key] = Gio.icon_new_for_string(path);
-		return this._file_mem_cache[key];
 	}
 
 	_initDataDir() {
@@ -60,13 +62,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"eye-repaint-interval",
 			"eye_repaint_interval",
-			debounce((e) => this.setActive(true), 300)
+			debounce((e) => this.setActive(true), 400)
 		);
 
 		this.settings.bind(
 			"fade-timeout",
 			"fade_timeout",
-			debounce((e) => this.on_property_updated(e), 300)
+			debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -84,13 +86,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"eye-line-width",
 			"eye_line_width",
-			debounce((e) => this.on_property_updated(e), 300)
+			debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
 			"eye-margin",
 			"eye_margin",
-			debounce((e) => this.on_property_updated(e), 300)
+			debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -114,7 +116,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-image-size",
 			"mouse_click_image_size",
-			debounce((e) => this.on_property_updated(e), 300)
+			debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -162,7 +164,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-opacity",
 			"mouse_click_opacity",
-			debounce((e) => this.on_property_updated(e), 300)
+			debounce((e) => this.on_property_updated(e), 400)
+		);
+
+		this.settings.bind(
+			"click-animation-mode",
+			"click_animation_mode",
+			null,
 		);
 	}
 
@@ -181,13 +189,13 @@ class Eye extends Applet.Applet {
 
 		this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
-		this.setActive(true);
-		this.setMouseCirclePropertyUpdate();
-		this.updateTooltip();
-
 		this._file_mem_cache = {};
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
+
+		this.setActive(true);
+		this.setMouseCirclePropertyUpdate();
+		this.updateTooltip();
 	}
 
 	on_applet_removed_from_panel(deleteConfig) {
@@ -203,10 +211,12 @@ class Eye extends Applet.Applet {
 		}
 	}
 
-	on_property_updated(event) {
+	on_property_updated(event, opts = { mouse_property_update: true, eye_property_update: true }) {
 		this.updateTooltip();
-		this.setMouseCirclePropertyUpdate();
-		this.setEyePropertyUpdate();
+		if (opts.mouse_property_update || true) /* Update by default */
+			this.setMouseCirclePropertyUpdate();
+		if (opts.eye_property_update || true) /* Update by default */
+			this.setEyePropertyUpdate();
 	}
 
 	on_mouse_click_enable_updated(event) {
@@ -286,6 +296,9 @@ class Eye extends Applet.Applet {
 	}
 
 	_mouseCircleCreateDataIcon(name, color) {
+		if (this._getIconCached(this.data_dir, this.mouse_click_mode, name, color))
+			return;
+
 		let source = Gio.File.new_for_path(`${this.img_dir}/${this.mouse_click_mode}.svg`);
 		let [l_success, contents] = source.load_contents(null);
 		contents = imports.byteArray.toString(contents);
@@ -304,8 +317,13 @@ class Eye extends Applet.Applet {
 	}
 
 	_clickAnimation(clickType, color) {
-		let icon = this._getMouseCircleIcon(this.data_dir, this.mouse_click_mode, clickType, color);
-		ClickAnimationModeFactory.createClickAnimationMode(this, "expansion").animateClick(icon);
+		let icon = this._getIconCached(this.data_dir, this.mouse_click_mode, clickType, color);
+
+		if (icon) {
+			ClickAnimationModeFactory
+				.createClickAnimationMode(this, this.click_animation_mode)
+				.animateClick(icon);
+		}
 	}
 
 	_eyeDraw(area) {
