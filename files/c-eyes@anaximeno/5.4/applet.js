@@ -39,10 +39,12 @@ class Eye extends Applet.Applet {
 
 		if (this._file_mem_cache[key]) {
 			return this._file_mem_cache[key];
+		} else if (GLib.file_test(path, GLib.FileTest.IS_REGULAR)) {
+			this._file_mem_cache[key] = Gio.icon_new_for_string(path);
+			return this._file_mem_cache[key];
+		} else {
+			return null;
 		}
-
-		this._file_mem_cache[key] = Gio.icon_new_for_string(path);
-		return this._file_mem_cache[key];
 	}
 
 	_initDataDir() {
@@ -316,7 +318,12 @@ class Eye extends Applet.Applet {
 
 	_clickAnimation(clickType, color) {
 		let icon = this._getIconCached(this.data_dir, this.mouse_click_mode, clickType, color);
-		ClickAnimationModeFactory.createClickAnimationMode(this, this.click_animation_mode).animateClick(icon);
+
+		if (icon) {
+			ClickAnimationModeFactory
+				.createClickAnimationMode(this, this.click_animation_mode)
+				.animateClick(icon);
+		}
 	}
 
 	_eyeDraw(area) {
