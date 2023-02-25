@@ -230,14 +230,14 @@ class Eye extends Applet.Applet {
 	setActive(enabled) {
 		this.setEyePropertyUpdate();
 
-		if (this._repaint_handler) {
-			this.area.disconnect(this._repaint_handler);
-			this._repaint_handler = null;
-		}
-
 		if (this._eye_update_handler) {
 			Mainloop.source_remove(this._eye_update_handler);
 			this._eye_update_handler = null;
+		}
+
+		if (this._repaint_handler) {
+			this.area.disconnect(this._repaint_handler);
+			this._repaint_handler = null;
 		}
 
 		if (enabled) {
