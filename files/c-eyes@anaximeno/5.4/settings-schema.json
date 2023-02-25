@@ -3,7 +3,7 @@
 		"type": "layout",
 		"pages": [
 			"eye",
-			"click"
+			"effects"
 		],
 		"eye": {
 			"type": "page",
@@ -13,9 +13,9 @@
 				"eye-colors"
 			]
 		},
-		"click": {
+		"effects": {
 			"type": "page",
-			"title": "Click Animation",
+			"title": "Effects",
 			"sections": [
 				"click-generic",
 				"click-events",
@@ -24,7 +24,7 @@
 		},
 		"eye-generic": {
 			"type": "section",
-			"title": "General Configuration",
+			"title": "General",
 			"keys": [
 				"eye-mode",
 				"eye-line-width",
@@ -34,7 +34,7 @@
 		},
 		"eye-colors": {
 			"type": "section",
-			"title": "Eye Colors",
+			"title": "Colors",
 			"keys": [
 				"eye-clicked-color",
 				"iris-clicked-color",
@@ -43,7 +43,7 @@
 		},
 		"click-generic": {
 			"type": "section",
-			"title": "Generic",
+			"title": "General",
 			"keys": [
 				"mouse-click-enable",
 				"mouse-click-mode",
@@ -76,7 +76,7 @@
 	"eye-mode": {
 		"type": "combobox",
 		"default": "lids",
-		"description": "Eye Mode",
+		"description": "Mode",
 		"options": {
 			"Lids": "lids",
 			"Bulb": "bulb"
@@ -84,7 +84,7 @@
 	},
 	"eye-line-width": {
 		"type": "spinbutton",
-		"description": "Eye Line Width",
+		"description": "Line Width",
 		"default": 2,
 		"min": 1,
 		"max": 5,
@@ -98,7 +98,7 @@
 		"max": 10,
 		"step": 1,
 		"units": "px",
-		"description": "Eye Margin Size"
+		"description": "Margin Size"
 	},
 	"eye-repaint-interval": {
 		"type": "spinbutton",
@@ -107,32 +107,32 @@
 		"max": 200,
 		"step": 5,
 		"units": "ms",
-		"description": "Eye Repaint Interval"
+		"description": "Repaint Interval"
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",
 		"default": "#0c75de",
-		"description": "Eye Clicked Color"
+		"description": "Base Color"
 	},
 	"iris-clicked-color": {
 		"type": "colorchooser",
 		"default": "#4077BF",
-		"description": "Iris Clicked Color"
+		"description": "Iris Color"
 	},
 	"pupil-clicked-color": {
 		"type": "colorchooser",
 		"default": "#40BEBF",
-		"description": "Pupil Clicked Color"
+		"description": "Pupil Color"
 	},
 	"mouse-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Mouse Click Enable"
+		"description": "Enable Effects"
 	},
 	"mouse-click-mode": {
 		"type": "combobox",
 		"default": 1,
-		"description": "Mouse Click Mode",
+		"description": "Mode",
 		"options": {
 			"Simple": 1,
 			"Trigun": 2,
@@ -162,23 +162,23 @@
 		"max": 120,
 		"step": 5,
 		"units": "px",
-		"description": "Mouse Click Size",
+		"description": "Circle Size",
 		"dependency": "mouse-click-enable"
 	},
 	"mouse-left-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Left Click"
+		"description": "Enable Left Click"
 	},
 	"mouse-middle-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Middle Click"
+		"description": "Enable Middle Click"
 	},
 	"mouse-right-click-enable": {
 		"type": "checkbox",
 		"default": true,
-		"description": "Enable Mouse Right Click"
+		"description": "Enable Right Click"
 	},
 	"fade-timeout": {
 		"type": "spinbutton",
@@ -192,24 +192,24 @@
 	"mouse-left-click-color": {
 		"type": "colorchooser",
 		"default": "#0c75de",
-		"description": "Mouse Left Click Color",
+		"description": "Left Click Color",
 		"dependency": "mouse-left-click-enable"
 	},
 	"mouse-middle-click-color": {
 		"type": "colorchooser",
 		"default": "#40BEBF",
-		"description": "Mouse Middle Click Color",
+		"description": "Middle Click Color",
 		"dependency": "mouse-middle-click-enable"
 	},
 	"mouse-right-click-color": {
 		"type": "colorchooser",
 		"default": "#4077BF",
-		"description": "Mouse Right Click Color",
+		"description": "Right Click Color",
 		"dependency": "mouse-right-click-enable"
 	},
 	"mouse-click-opacity": {
 		"type": "spinbutton",
-		"description": "Mouse Click Opacity",
+		"description": "General Opacity",
 		"default": 255,
 		"min": 5,
 		"max": 255,
