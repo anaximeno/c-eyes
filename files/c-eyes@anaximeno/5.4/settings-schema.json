@@ -47,7 +47,8 @@
 			"keys": [
 				"mouse-click-enable",
 				"mouse-click-mode",
-				"mouse-click-image-size"
+				"mouse-click-image-size",
+				"click-animation-mode"
 			]
 		},
 		"click-events": {
@@ -112,17 +113,17 @@
 	"eye-clicked-color": {
 		"type": "colorchooser",
 		"default": "#0c75de",
-		"description": "Base Color"
+		"description": "Activated Base Color"
 	},
 	"iris-clicked-color": {
 		"type": "colorchooser",
 		"default": "#4077BF",
-		"description": "Iris Color"
+		"description": "Activated Iris Color"
 	},
 	"pupil-clicked-color": {
 		"type": "colorchooser",
 		"default": "#40BEBF",
-		"description": "Pupil Color"
+		"description": "Activated Pupil Color"
 	},
 	"mouse-click-enable": {
 		"type": "checkbox",
@@ -132,7 +133,7 @@
 	"mouse-click-mode": {
 		"type": "combobox",
 		"default": 1,
-		"description": "Mode",
+		"description": "Icon Mode",
 		"options": {
 			"Simple": 1,
 			"Trigun": 2,
@@ -162,8 +163,19 @@
 		"max": 120,
 		"step": 5,
 		"units": "px",
-		"description": "Circle Size",
+		"description": "Icon Size",
 		"dependency": "mouse-click-enable"
+	},
+	"click-animation-mode": {
+		"type": "combobox",
+		"default": "blink",
+		"description": "Click Animation Mode",
+		"options": {
+			"Blink": "blink",
+			"Bounce Back": "bounce-back",
+			"Retract": "retract",
+			"Expand": "expand"
+		}
 	},
 	"mouse-left-click-enable": {
 		"type": "checkbox",

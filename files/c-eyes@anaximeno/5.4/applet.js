@@ -164,6 +164,12 @@ class Eye extends Applet.Applet {
 			"mouse_click_opacity",
 			debounce((e) => this.on_property_updated(e), 300)
 		);
+
+		this.settings.bind(
+			"click-animation-mode",
+			"click_animation_mode",
+			null,
+		);
 	}
 
 	constructor(metadata, orientation, panelHeight, instanceId) {
@@ -305,7 +311,7 @@ class Eye extends Applet.Applet {
 
 	_clickAnimation(clickType, color) {
 		let icon = this._getMouseCircleIcon(this.data_dir, this.mouse_click_mode, clickType, color);
-		ClickAnimationModeFactory.createClickAnimationMode(this, "expansion").animateClick(icon);
+		ClickAnimationModeFactory.createClickAnimationMode(this, this.click_animation_mode).animateClick(icon);
 	}
 
 	_eyeDraw(area) {
