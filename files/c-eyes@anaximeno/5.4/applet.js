@@ -32,6 +32,20 @@ const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
 const CLICK_DEBOUNCE_INTERVAL = 2;
 
+// NOTE: must keep in sync with metadata.uuid
+const UUID = "c-eyes@anaximeno";
+
+Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
+
+function _(text) {
+	let locText = Gettext.dgettext(UUID, text);
+
+	if (locText == text) {
+		locText = window._(text);
+	}
+
+	return locText;
+}
 
 class Eye extends Applet.Applet {
 	_getIconCached(dir, mode, click_type, color) {
@@ -327,12 +341,12 @@ class Eye extends Applet.Applet {
 	}
 
 	updateTooltip() {
-		let complement = this.mouse_click_enable ? this._("effects enabled") : this._("effects disabled");
+		let complement = this.mouse_click_enable ? _("effects enabled") : _("effects disabled");
 
 		if (this.eye_activated) {
-			this.set_applet_tooltip(this._("Click to deactivate") + ` (${complement})`);
+			this.set_applet_tooltip(_("Click to deactivate") + ` (${complement})`);
 		} else {
-			this.set_applet_tooltip(this._("Click to activate") + ` (${complement})`);
+			this.set_applet_tooltip(_("Click to activate") + ` (${complement})`);
 		}
 	}
 
@@ -425,17 +439,6 @@ class Eye extends Applet.Applet {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Translates the text to the user locale, if available.
-	 * @param {String} text Text to be traslated
-	 * @returns String
-	 */
-	_(text) {
-		if (this._uuid === null)
-			this._uuid = this.metadata.uuid || "c-eyes@anaximeno";
-		return super._(text);
 	}
 }
 
