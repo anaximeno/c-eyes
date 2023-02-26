@@ -19,21 +19,27 @@
 
 const Util = imports.misc.util;
 
-function debounce(fn, timeout) {
-    let sourceId = 0;
+class Debouncer {
+    _sourceId;
 
-    return function (...args) {
-        if (sourceId > 0) {
-            Util.clearTimeout(sourceId);
-        }
+    constructor() {
+        this._sourceId = 0;
+    }
 
-        sourceId = Util.setTimeout(() => {
-            if (sourceId > 0) {
-                Util.clearTimeout(sourceId);
-                sourceId = 0;
+    debounce(fn, timeout) {
+        return function (...args) {
+            if (this._sourceId > 0) {
+                Util.clearTimeout(this._sourceId);
             }
-
-            fn.apply(this, args);
-        }, timeout);
+    
+            this._sourceId = Util.setTimeout(() => {
+                if (this._sourceId > 0) {
+                    Util.clearTimeout(this._sourceId);
+                    this._sourceId = 0;
+                }
+    
+                fn.apply(this, args);
+            }, timeout);
+        }
     }
 }

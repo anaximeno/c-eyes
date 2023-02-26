@@ -36,7 +36,7 @@ class ClickAnimationMode {
     /**
      * Animates the click into the screen
      * @param {GIcon} icon The icon that will be animated
-     * @param {object} options Additional options used while during the drawing of the eye
+     * @param {object} options Additional options used while during the animation
      */
     animateClick(icon, options = {}) {
         // Implemented by sub-classes

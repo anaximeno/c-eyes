@@ -21,15 +21,16 @@ const Mainloop = imports.mainloop;
 const Settings = imports.ui.settings;
 const Applet = imports.ui.applet;
 
+const SignalManager = imports.misc.signalManager;
 const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
 const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
-const { debounce } = require("./helper.js");
-
+const { Debouncer } = require("./helper.js");
 
 const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
+const CLICK_DEBOUNCE_INTERVAL = 2;
 
 
 class Eye extends Applet.Applet {
@@ -57,18 +58,19 @@ class Eye extends Applet.Applet {
 	}
 
 	_setupSettings(uuid, instanceId) {
+		let settingsDebouncer = new Debouncer();
 		this.settings = new Settings.AppletSettings(this, uuid, instanceId);
 
 		this.settings.bind(
 			"eye-repaint-interval",
 			"eye_repaint_interval",
-			debounce((e) => this.setActive(true), 400)
+			settingsDebouncer.debounce((e) => this.setActive(true), 400)
 		);
 
 		this.settings.bind(
 			"fade-timeout",
 			"fade_timeout",
-			debounce((e) => this.on_property_updated(e), 400)
+			settingsDebouncer.debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -86,13 +88,13 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"eye-line-width",
 			"eye_line_width",
-			debounce((e) => this.on_property_updated(e), 400)
+			settingsDebouncer.debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
 			"eye-margin",
 			"eye_margin",
-			debounce((e) => this.on_property_updated(e), 400)
+			settingsDebouncer.debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -116,7 +118,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-image-size",
 			"mouse_click_image_size",
-			debounce((e) => this.on_property_updated(e), 400)
+			settingsDebouncer.debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -164,7 +166,7 @@ class Eye extends Applet.Applet {
 		this.settings.bind(
 			"mouse-click-opacity",
 			"mouse_click_opacity",
-			debounce((e) => this.on_property_updated(e), 400)
+			settingsDebouncer.debounce((e) => this.on_property_updated(e), 400)
 		);
 
 		this.settings.bind(
@@ -212,6 +214,8 @@ class Eye extends Applet.Applet {
 		this._last_mouse_y = undefined;
 
 		this.eye_activated = this.eye_activate_by_default;
+
+		this.click_debounced = (new Debouncer()).debounce(this._clickAnimation.bind(this), CLICK_DEBOUNCE_INTERVAL);
 
 		this.setActive(true);
 		this.setMouseCirclePropertyUpdate();
@@ -392,15 +396,15 @@ class Eye extends Applet.Applet {
 		switch (event.type) {
 			case 'mouse:button:1p':
 				if (this.mouse_left_click_enable)
-					this._clickAnimation('left_click', this.mouse_left_click_color);
+					this.click_debounced('left_click', this.mouse_left_click_color);
 				break;
 			case 'mouse:button:2p':
 				if (this.mouse_middle_click_enable)
-					this._clickAnimation('middle_click', this.mouse_middle_click_color);
+					this.click_debounced('middle_click', this.mouse_middle_click_color);
 				break;
 			case 'mouse:button:3p':
 				if (this.mouse_right_click_enable)
-					this._clickAnimation('right_click', this.mouse_right_click_color);
+					this.click_debounced('right_click', this.mouse_right_click_color);
 				break;
 		}
 	}

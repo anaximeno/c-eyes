@@ -42,8 +42,8 @@ class ClickAnimationMode {
 
 class ExpansionClickAnimationMode extends ClickAnimationMode {
     animateClick(icon, options = {}) {
-        let [mouse_x, mouse_y, _] = global.get_pointer();
         let actor_scale = this.eye.mouse_click_image_size > 20 ? 1.5 : 3;
+        let [mouse_x, mouse_y, _] = global.get_pointer();
 
         let actor = new St.Icon({
             x: mouse_x - (this.eye.mouse_click_image_size / 2),
@@ -59,11 +59,11 @@ class ExpansionClickAnimationMode extends ClickAnimationMode {
         Main.uiGroup.add_child(actor);
 
         Tweener.addTween(actor, {
+            opacity: 0,
             x: mouse_x - (this.eye.mouse_click_image_size * actor_scale / 2),
             y: mouse_y - (this.eye.mouse_click_image_size * actor_scale / 2),
             scale_x: actor_scale,
             scale_y: actor_scale,
-            opacity: 0,
             time: this.eye.fade_timeout / 1000,
             transition: "easeOutQuad",
             onComplete: () => {
@@ -124,7 +124,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             can_focus: false,
             track_hover: false,
             icon_size: this.eye.mouse_click_image_size,
-            opacity: this.eye.mouse_click_opacity,
+            opacity: 0,
             gicon: icon
         });
 
@@ -135,6 +135,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             y: mouse_y - (this.eye.mouse_click_image_size / 2),
             scale_x: 1,
             scale_y: 1,
+            opacity: this.eye.mouse_click_opacity,
             time: this.eye.fade_timeout / 2000, /* = ((timeout / 1000) / 2) */
             transition: "easeOutQuad",
             onComplete: () => {
@@ -193,7 +194,7 @@ class BlinkClickAnimationMode extends ClickAnimationMode {
 class ClickAnimationModeFactory {
     /**
      * Returns an click animation mode depending on the given name
-     * @param {Eye} eye An instance of the class eye
+     * @param {Eye} eye An instance of the class Eye
      * @param {String} mode Click Animation mode name to create
      * @returns ClickAnimationMode subclass
      */
