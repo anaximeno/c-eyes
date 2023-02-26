@@ -22,37 +22,31 @@ const Tweener = imports.ui.tweener;
 const St = imports.gi.St;
 
 class ClickAnimationMode {
-    /**
-     * Create a new instance of the eye mode
-     * @param {Eye} eye An instance of the class eye
-     */
-    constructor(eye) {
-        this.eye = eye;
-    }
+    constructor() { }
 
     /**
      * Animates the click into the screen
      * @param {GIcon} icon The icon that will be animated
-     * @param {object} options Additional options used while during the animation
+     * @param {Object} options Additional options used while during the animation
      */
-    animateClick(icon, options = {}) {
+    animateClick(icon, options) {
         // Implemented by sub-classes
     }
 }
 
 class ExpansionClickAnimationMode extends ClickAnimationMode {
-    animateClick(icon, options = {}) {
-        let actor_scale = this.eye.mouse_click_image_size > 20 ? 1.5 : 3;
+    animateClick(icon, options) {
+        let actor_scale = options.icon_size > 20 ? 1.5 : 3;
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         let actor = new St.Icon({
-            x: mouse_x - (this.eye.mouse_click_image_size / 2),
-            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            x: mouse_x - (options.icon_size / 2),
+            y: mouse_y - (options.icon_size / 2),
             reactive: false,
             can_focus: false,
             track_hover: false,
-            icon_size: this.eye.mouse_click_image_size,
-            opacity: this.eye.mouse_click_opacity,
+            icon_size: options.icon_size,
+            opacity: options.opacity,
             gicon: icon
         });
 
@@ -60,11 +54,11 @@ class ExpansionClickAnimationMode extends ClickAnimationMode {
 
         Tweener.addTween(actor, {
             opacity: 0,
-            x: mouse_x - (this.eye.mouse_click_image_size * actor_scale / 2),
-            y: mouse_y - (this.eye.mouse_click_image_size * actor_scale / 2),
+            x: mouse_x - (options.icon_size * actor_scale / 2),
+            y: mouse_y - (options.icon_size * actor_scale / 2),
             scale_x: actor_scale,
             scale_y: actor_scale,
-            time: this.eye.fade_timeout / 1000,
+            time: options.timeout / 1000,
             transition: "easeOutQuad",
             onComplete: () => {
                 Main.uiGroup.remove_child(actor);
@@ -77,17 +71,17 @@ class ExpansionClickAnimationMode extends ClickAnimationMode {
 }
 
 class RetractionClickAnimationMode extends ClickAnimationMode {
-    animateClick(icon, options = {}) {
+    animateClick(icon, options) {
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         let actor = new St.Icon({
-            x: mouse_x - (this.eye.mouse_click_image_size / 2),
-            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            x: mouse_x - (options.icon_size / 2),
+            y: mouse_y - (options.icon_size / 2),
             reactive: false,
             can_focus: false,
             track_hover: false,
-            icon_size: this.eye.mouse_click_image_size,
-            opacity: this.eye.mouse_click_opacity,
+            icon_size: options.icon_size,
+            opacity: options.opacity,
             gicon: icon
         });
 
@@ -99,7 +93,7 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
             y: mouse_y,
             scale_x: 0,
             scale_y: 0,
-            time: this.eye.fade_timeout / 1000,
+            time: options.timeout / 1000,
             transition: "easeOutQuad",
             onComplete: () => {
                 Main.uiGroup.remove_child(actor);
@@ -112,7 +106,7 @@ class RetractionClickAnimationMode extends ClickAnimationMode {
 }
 
 class BounceBackClickAnimationMode extends ClickAnimationMode {
-    animateClick(icon, options = {}) {
+    animateClick(icon, options) {
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         let actor = new St.Icon({
@@ -123,7 +117,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             reactive: false,
             can_focus: false,
             track_hover: false,
-            icon_size: this.eye.mouse_click_image_size,
+            icon_size: options.icon_size,
             opacity: 0,
             gicon: icon
         });
@@ -131,41 +125,21 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
         Main.uiGroup.add_child(actor);
 
         Tweener.addTween(actor, {
-            x: mouse_x - (this.eye.mouse_click_image_size / 2),
-            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            x: mouse_x - (options.icon_size / 2),
+            y: mouse_y - (options.icon_size / 2),
             scale_x: 1,
             scale_y: 1,
-            opacity: this.eye.mouse_click_opacity,
-            time: this.eye.fade_timeout / 2000 - 0.025, /* = (((timeout - 50) / 1000) / 2) */
+            opacity: options.opacity,
+            time: options.timeout / 2000 - 0.025, /* = (((timeout - 50) / 1000) / 2) */
             transition: "easeOutQuad",
             onComplete: () => {
-                Main.uiGroup.remove_child(actor);
-                actor.destroy();
-
-                // NOTE: I am creating a new icon instance instead of continuing the animation with
-                // the previous instance because, when using the previous actor, when reloading the applet
-                // a residual image would be left on the screen, because the second animation would be stopped
-                // before completing.
-
-                actor = new St.Icon({
-                    x: mouse_x - (this.eye.mouse_click_image_size / 2),
-                    y: mouse_y - (this.eye.mouse_click_image_size / 2),
-                    scale_x: 1,
-                    scale_y: 1,
-                    reactive: false,
-                    can_focus: false,
-                    track_hover: false,
-                    icon_size: this.eye.mouse_click_image_size,
-                    gicon: icon
-                });
-
                 Tweener.addTween(actor, {
                     opacity: 0,
                     x: mouse_x,
                     y: mouse_y,
                     scale_x: 0,
                     scale_y: 0,
-                    time: this.eye.fade_timeout / 2000 + 0.025, /* = (((timeout + 50) / 1000) / 2) */
+                    time: options.timeout / 2000 + 0.025, /* = (((timeout + 50) / 1000) / 2) */
                     transition: "easeOutQuad",
                     onComplete: () => {
                         Main.uiGroup.remove_child(actor);
@@ -181,17 +155,17 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
 }
 
 class BlinkClickAnimationMode extends ClickAnimationMode {
-    animateClick(icon, options = {}) {
+    animateClick(icon, options) {
         let [mouse_x, mouse_y, _] = global.get_pointer();
 
         let actor = new St.Icon({
-            x: mouse_x - (this.eye.mouse_click_image_size / 2),
-            y: mouse_y - (this.eye.mouse_click_image_size / 2),
+            x: mouse_x - (options.icon_size / 2),
+            y: mouse_y - (options.icon_size / 2),
             reactive: false,
             can_focus: false,
             track_hover: false,
-            icon_size: this.eye.mouse_click_image_size,
-            opacity: this.eye.mouse_click_opacity,
+            icon_size: options.icon_size,
+            opacity: options.opacity,
             gicon: icon
         });
 
@@ -199,7 +173,7 @@ class BlinkClickAnimationMode extends ClickAnimationMode {
 
         Tweener.addTween(actor, {
             opacity: 0,
-            time: this.eye.fade_timeout / 1000,
+            time: options.timeout / 1000,
             transition: "easeOutQuad",
             onComplete: () => {
                 Main.uiGroup.remove_child(actor);
@@ -214,21 +188,20 @@ class BlinkClickAnimationMode extends ClickAnimationMode {
 class ClickAnimationModeFactory {
     /**
      * Returns an click animation mode depending on the given name
-     * @param {Eye} eye An instance of the class Eye
      * @param {String} mode Click Animation mode name to create
      * @returns ClickAnimationMode subclass
      */
-    static createClickAnimationMode(eye, mode) {
+    static createClickAnimationMode(mode) {
         switch (mode) {
             case "bounce-back":
-                return new BounceBackClickAnimationMode(eye);
+                return new BounceBackClickAnimationMode();
             case "retract":
-                return new RetractionClickAnimationMode(eye);
+                return new RetractionClickAnimationMode();
             case "expand":
-                return new ExpansionClickAnimationMode(eye);
+                return new ExpansionClickAnimationMode();
             case "blink":
             default:
-                return new BlinkClickAnimationMode(eye);
+                return new BlinkClickAnimationMode();
         }
     }
 }

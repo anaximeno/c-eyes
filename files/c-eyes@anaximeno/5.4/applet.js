@@ -361,9 +361,15 @@ class Eye extends Applet.Applet {
 		let icon = this._getIconCached(this.data_dir, this.mouse_click_mode, clickType, color);
 
 		if (icon) {
+			let options = {
+				icon_size: this.mouse_click_image_size,
+				opacity: this.mouse_click_opacity,
+				timeout: this.fade_timeout
+			};
+
 			ClickAnimationModeFactory
-				.createClickAnimationMode(this, this.click_animation_mode)
-				.animateClick(icon);
+				.createClickAnimationMode(this.click_animation_mode)
+				.animateClick(icon, options);
 		}
 	}
 
