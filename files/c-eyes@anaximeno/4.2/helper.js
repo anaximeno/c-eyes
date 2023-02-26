@@ -17,21 +17,23 @@
  */
 'use strict';
 
-const GLib = imports.gi.GLib;
+const Util = imports.misc.util;
 
-function debounce(fn, timeout, options = { priority: GLib.PRIORITY_DEFAULT }) {
-    let sourceId = null;
+function debounce(fn, timeout) {
+    let sourceId = 0;
 
     return function (...args) {
-        const debouncedFunc = () => {
-            sourceId = null;
-            fn.apply(this, args);
-        };
-
-        if (sourceId) {
-            GLib.Source.remove(sourceId);
+        if (sourceId > 0) {
+            Util.clearTimeout(sourceId);
         }
 
-        sourceId = GLib.timeout_add(options.priority, timeout, debouncedFunc);
+        sourceId = Util.setTimeout(() => {
+            if (sourceId > 0) {
+                Util.clearTimeout(sourceId);
+                sourceId = 0;
+            }
+
+            fn.apply(this, args);
+        }, timeout);
     }
 }

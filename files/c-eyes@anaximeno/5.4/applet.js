@@ -273,6 +273,7 @@ class Eye extends Applet.Applet {
 		this.setMouseCircleActive(false);
 		this.setActive(false);
 		this.area.destroy();
+		this.settings.finalize();
 	}
 
 	setActive(enabled) {

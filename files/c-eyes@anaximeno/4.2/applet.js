@@ -276,6 +276,7 @@ class Eye extends Applet.Applet {
 		this.setMouseCircleActive(false);
 		this.setActive(false);
 		this.area.destroy();
+		this.settings.finalize();
 	}
 
 	setActive(enabled) {
@@ -286,13 +287,10 @@ class Eye extends Applet.Applet {
 			this._eye_update_handler = null;
 		}
 
-		if (this._repaint_handler) {
-			this.area.disconnect(this._repaint_handler);
-			this._repaint_handler = null;
-		}
+		this.signals.disconnect('repaint', this.area);
 
 		if (enabled) {
-			this._repaint_handler = this.area.connect("repaint", this._eyeDraw.bind(this));
+			this.signals.connect(this.area, 'repaint', this._eyeDraw, this);
 
 			this._eye_update_handler = Mainloop.timeout_add(
 				this.eye_repaint_interval, this._eyeTimeout.bind(this)
