@@ -60,7 +60,7 @@ class EyeMode {
     /**
      * Draws the eye on the panel
      * @param {St.DrawingArea} area The area on repaint
-     * @param {object} options Drawing options
+     * @param {Object} options Drawing options
      */
     drawEye(area, options) {
         // Implemented by sub-classes
@@ -103,7 +103,7 @@ class EyelidMode extends EyeMode {
         Clutter.cairo_set_source_color(cr, options.eye_color);
 
         cr.translate(area_width * 0.5, area_height * 0.5);
-        cr.setLineWidth(this.eye.eye_line_width);
+        cr.setLineWidth(options.line_width);
 
         let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
         let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
@@ -135,7 +135,7 @@ class EyelidMode extends EyeMode {
         // -- Drawing the iris of the eye
 
         cr.rotate(mouse_ang);
-        cr.setLineWidth(this.eye.eye_line_width / iris_rad);
+        cr.setLineWidth(options.line_width / iris_rad);
 
         Clutter.cairo_set_source_color(cr, options.iris_color);
 
@@ -197,7 +197,7 @@ class EyelidFillMode extends EyeMode {
         Clutter.cairo_set_source_color(cr, options.eye_color);
 
         cr.translate(area_width * 0.5, area_height * 0.5);
-        cr.setLineWidth(this.eye.eye_line_width);
+        cr.setLineWidth(options.line_width);
 
         let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
         let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
@@ -215,7 +215,7 @@ class EyelidFillMode extends EyeMode {
         cr.curveTo(x_def + iris_rad, y_def - amp,
             x_def - iris_rad, y_def - amp, -eye_rad, 0);
 
-        this.eye.eye_activated ? cr.fill() : cr.stroke();
+        options.is_eye_active ? cr.fill() : cr.stroke();
 
         amp = eye_rad * top_lid;
         cr.moveTo(-eye_rad, 0);
@@ -230,7 +230,7 @@ class EyelidFillMode extends EyeMode {
         // -- Drawing the iris of the eye
 
         cr.rotate(mouse_ang);
-        cr.setLineWidth(this.eye.eye_line_width / iris_rad);
+        cr.setLineWidth(options.line_width / iris_rad);
 
         Clutter.cairo_set_source_color(cr, options.iris_color);
 
@@ -238,7 +238,7 @@ class EyelidFillMode extends EyeMode {
         cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
         cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
 
-        this.eye.eye_activated ? cr.fill() : cr.stroke();
+        options.is_eye_active ? cr.fill() : cr.stroke();
 
         cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
         cr.translate(-iris_r * Math.sin(eye_ang), 0);
@@ -278,7 +278,7 @@ class BulbMode extends EyeMode {
         let iris_rad = eye_rad * 0.6;
         let pupil_rad = iris_rad * 0.4;
 
-        let max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - this.eye.eye_line_width;
+        let max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - options.line_width;
 
         if (mouse_rad > max_rad)
             mouse_rad = max_rad;
@@ -295,14 +295,14 @@ class BulbMode extends EyeMode {
         Clutter.cairo_set_source_color(cr, options.eye_color);
 
         cr.translate(area_width * 0.5, area_height * 0.5);
-        cr.setLineWidth(this.eye.eye_line_width);
+        cr.setLineWidth(options.line_width);
         cr.arc(0, 0, eye_rad, 0, 2 * Math.PI);
         cr.stroke();
 
         // -- Drawing the iris of the eye
 
         cr.rotate(mouse_ang);
-        cr.setLineWidth(this.eye.eye_line_width / iris_rad);
+        cr.setLineWidth(options.line_width / iris_rad);
 
         Clutter.cairo_set_source_color(cr, options.iris_color);
 

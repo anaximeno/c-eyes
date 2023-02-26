@@ -379,7 +379,9 @@ class Eye extends Applet.Applet {
 		let options = {
 			eye_color: foreground_color,
 			iris_color: foreground_color,
-			pupil_color: foreground_color
+			pupil_color: foreground_color,
+			line_width: this.eye_line_width,
+			is_eye_active: this.eye_activated
 		};
 
 		if (this.eye_activated) {
