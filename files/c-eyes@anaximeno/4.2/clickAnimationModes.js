@@ -136,16 +136,36 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             scale_x: 1,
             scale_y: 1,
             opacity: this.eye.mouse_click_opacity,
-            time: this.eye.fade_timeout / 2000, /* = ((timeout / 1000) / 2) */
+            time: this.eye.fade_timeout / 2000 - 0.025, /* = (((timeout - 50) / 1000) / 2) */
             transition: "easeOutQuad",
             onComplete: () => {
+                Main.uiGroup.remove_child(actor);
+                actor.destroy();
+
+                // NOTE: I am creating a new icon instance instead of continuing the animation with
+                // the previous instance because, when using the previous actor, when reloading the applet
+                // a residual image would be left on the screen, because the second animation would be stopped
+                // before completing.
+
+                actor = new St.Icon({
+                    x: mouse_x - (this.eye.mouse_click_image_size / 2),
+                    y: mouse_y - (this.eye.mouse_click_image_size / 2),
+                    scale_x: 1,
+                    scale_y: 1,
+                    reactive: false,
+                    can_focus: false,
+                    track_hover: false,
+                    icon_size: this.eye.mouse_click_image_size,
+                    gicon: icon
+                });
+
                 Tweener.addTween(actor, {
                     opacity: 0,
                     x: mouse_x,
                     y: mouse_y,
                     scale_x: 0,
                     scale_y: 0,
-                    time: this.eye.fade_timeout / 2000, /* = ((timeout / 1000) / 2) */
+                    time: this.eye.fade_timeout / 2000 + 0.025, /* = (((timeout + 50) / 1000) / 2) */
                     transition: "easeOutQuad",
                     onComplete: () => {
                         Main.uiGroup.remove_child(actor);
