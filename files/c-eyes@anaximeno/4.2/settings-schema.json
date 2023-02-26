@@ -30,6 +30,7 @@
 				"eye-line-width",
 				"eye-margin",
 				"eye-repaint-interval",
+				"deactivate-on-fullscreen",
 				"eye-activate-by-default"
 			]
 		},
@@ -115,7 +116,12 @@
 	"eye-activate-by-default": {
 		"type": "checkbox",
 		"default": false,
-		"description": "Activate By Default"
+		"description": "Start Activated"
+	},
+	"deactivate-on-fullscreen": {
+		"type": "checkbox",
+		"default": false,
+		"description": "Deactivate On Fullscreen"
 	},
 	"eye-clicked-color": {
 		"type": "colorchooser",

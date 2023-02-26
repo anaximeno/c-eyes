@@ -21,6 +21,7 @@ const Mainloop = imports.mainloop;
 const Settings = imports.ui.settings;
 const Applet = imports.ui.applet;
 
+const SignalManager = imports.misc.signalManager;
 const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
@@ -178,6 +179,12 @@ class Eye extends Applet.Applet {
 			"eye_activate_by_default",
 			this.on_eye_activated_by_default_updated
 		);
+
+		this.settings.bind(
+			"deactivate-on-fullscreen",
+			"deactivate_on_fullscreen",
+			null,
+		);
 	}
 
 	constructor(metadata, orientation, panelHeight, instanceId) {
@@ -193,6 +200,8 @@ class Eye extends Applet.Applet {
 		this.area = new St.DrawingArea();
 		this.actor.add(this.area);
 
+		this.signals = new SignalManager.SignalManager(null);
+		this.signals.connect(global.screen, 'in-fullscreen-changed', this.on_fullscreen_changed, this);
 		this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
 		this._file_mem_cache = {};
@@ -250,7 +259,17 @@ class Eye extends Applet.Applet {
 		}
 	}
 
+	on_fullscreen_changed() {
+		if (this.deactivate_on_fullscreen) {
+			let monitor = global.screen.get_current_monitor();
+			let inFullscreen = global.screen.get_monitor_in_fullscreen(monitor);
+			this.setActive(!inFullscreen);
+			this.setMouseCircleActive(!inFullscreen && this.mouse_click_show);
+		}
+	}
+
 	destroy() {
+		this.signals.disconnectAllSignals();
 		this.setMouseCircleActive(false);
 		this.setActive(false);
 		this.area.destroy();
