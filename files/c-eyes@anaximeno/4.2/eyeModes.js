@@ -328,6 +328,78 @@ class BulbMode extends EyeMode {
     }
 }
 
+class BulbFillMode extends EyeMode {
+    drawEye(area, options) {
+        let [area_x, area_y] = this.areaPos();
+        let [area_width, area_height] = area.get_surface_size();
+
+        area_x += area_width / 2;
+        area_y += area_height / 2;
+
+        let [mouse_x, mouse_y, _] = global.get_pointer();
+
+        mouse_x -= area_x;
+        mouse_y -= area_y;
+
+        let mouse_ang = Math.atan2(mouse_y, mouse_x);
+        let mouse_rad = Math.sqrt(mouse_x * mouse_x + mouse_y * mouse_y);
+
+        let eye_rad = (area_height) / 2.3;
+        let iris_rad = eye_rad * 0.6;
+        let pupil_rad = iris_rad * 0.4;
+
+        let max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad)) - options.line_width;
+
+        if (mouse_rad > max_rad)
+            mouse_rad = max_rad;
+
+        let iris_arc = Math.asin(iris_rad / eye_rad);
+        let iris_r = eye_rad * Math.cos(iris_arc);
+
+        let eye_ang = Math.atan(mouse_rad / iris_r);
+
+        let cr = area.get_context();
+
+        // -- Drawing the base of the eye
+
+        Clutter.cairo_set_source_color(cr, options.eye_color);
+
+        cr.translate(area_width * 0.5, area_height * 0.5);
+        cr.setLineWidth(options.line_width);
+        cr.arc(0, 0, eye_rad, 0, 2 * Math.PI);
+        options.is_eye_active ? cr.fill() : cr.stroke();
+
+        // -- Drawing the iris of the eye
+
+        cr.rotate(mouse_ang);
+        cr.setLineWidth(options.line_width / iris_rad);
+
+        Clutter.cairo_set_source_color(cr, options.iris_color);
+
+        cr.translate(iris_r * Math.sin(eye_ang), 0);
+        cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
+
+        options.is_eye_active ? cr.fill() : cr.stroke();
+
+        cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
+        cr.translate(-iris_r * Math.sin(eye_ang), 0);
+
+        // -- Drawing the pupil of the eye
+
+        Clutter.cairo_set_source_color(cr, options.pupil_color);
+
+        cr.translate(eye_rad * Math.sin(eye_ang), 0);
+        cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
+        cr.fill();
+
+        cr.save();
+        cr.restore();
+        cr.$dispose();
+    }
+}
+
 class EyeModeFactory {
     /**
      * Returns an eye mode depending on the given name
@@ -339,6 +411,8 @@ class EyeModeFactory {
         switch (mode) {
             case "bulb":
                 return new BulbMode(eye);
+            case "bulb-fill":
+                return new BulbFillMode(eye);
             case "lids-fill":
                 return new EyelidFillMode(eye);
             case "lids":

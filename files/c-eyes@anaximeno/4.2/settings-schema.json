@@ -83,7 +83,8 @@
 		"options": {
 			"Lids": "lids",
 			"Lids Filled": "lids-fill",
-			"Bulb": "bulb"
+			"Bulb": "bulb",
+			"Bulb Filled": "bulb-fill"
 		}
 	},
 	"eye-line-width": {

@@ -20,6 +20,7 @@
 const Mainloop = imports.mainloop;
 const Settings = imports.ui.settings;
 const Applet = imports.ui.applet;
+const Gettext = imports.gettext;
 
 const SignalManager = imports.misc.signalManager;
 const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
