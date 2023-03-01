@@ -35,8 +35,8 @@ class Debouncer {
         return ((...args) => {
             this.clearSource();
             this._sourceId = Util.setTimeout(() => {
-                fn.apply(this, args);
                 this.clearSource();
+                fn.apply(this, args);
             }, timeout);
         }).bind(this);
     }
