@@ -24,20 +24,20 @@ class Debouncer {
         this._sourceId = 0;
     }
 
-    debounce(fn, timeout) {
-        return function (...args) {
-            if (this._sourceId > 0) {
-                Util.clearTimeout(this._sourceId);
-            }
-    
-            this._sourceId = Util.setTimeout(() => {
-                if (this._sourceId > 0) {
-                    Util.clearTimeout(this._sourceId);
-                    this._sourceId = 0;
-                }
-    
-                fn.apply(this, args);
-            }, timeout);
+    clearSource() {
+        if (this._sourceId > 0) {
+            Util.clearTimeout(this._sourceId);
+            this._sourceId = 0;
         }
+    }
+
+    debounce(fn, timeout) {
+        return ((...args) => {
+            this.clearSource();
+            this._sourceId = Util.setTimeout(() => {
+                fn.apply(this, args);
+                this.clearSource();
+            }, timeout);
+        }).bind(this);
     }
 }
