@@ -31,10 +31,8 @@ const { Debouncer } = require("./helper.js");
 
 const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
-const CLICK_DEBOUNCE_INTERVAL = 2;
-
-// NOTE: must keep in sync with metadata.uuid
-const UUID = "c-eyes@anaximeno";
+const CLICK_DEBOUNCE_INTERVAL = 5;
+const UUID = "c-eyes@anaximeno"; // NOTE: must keep in sync with metadata.uuid
 
 Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
 

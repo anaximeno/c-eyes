@@ -31,10 +31,8 @@ const { Debouncer } = require("./helper.js");
 
 const EYE_AREA_WIDTH = 34;
 const EYE_AREA_HEIGHT = 16;
-const CLICK_DEBOUNCE_INTERVAL = 2;
-
-// NOTE: must keep in sync with metadata.uuid
-const UUID = "c-eyes@anaximeno";
+const CLICK_DEBOUNCE_INTERVAL = 5;
+const UUID = "c-eyes@anaximeno"; // NOTE: must keep in sync with metadata.uuid
 
 Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
 
@@ -368,9 +366,11 @@ class Eye extends Applet.Applet {
 
 		// Save content to cache dir
 		let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_click_mode}_${name}_${color}.svg`);
+
 		if (!dest.query_exists(null)) {
 			dest.create(Gio.FileCreateFlags.NONE, null);
 		}
+
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
