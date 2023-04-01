@@ -29,9 +29,10 @@ const { EyeModeFactory } = require("./eyeModes.js");
 const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
 const { Debouncer } = require("./helper.js");
 
-const EYE_AREA_WIDTH = 34;
-const EYE_AREA_HEIGHT = 16;
 const CLICK_DEBOUNCE_INTERVAL = 2;
+
+const EYE_AREA_WIDTH = 28;
+const EYE_AREA_HEIGHT = 16;
 
 // NOTE: must keep in sync with metadata.uuid
 const UUID = "c-eyes@anaximeno";
@@ -201,6 +202,14 @@ class Eye extends Applet.Applet {
 			"deactivate_on_fullscreen",
 			null,
 		);
+
+                this.settings.bind(
+			"eye-vertical-padding",
+			"eye_vertical_padding",
+			settingsDebouncer.debounce(
+				(e) => this.on_property_updated(e,
+					{ eye_property_update: true, mouse_property_update: false })),
+		);
 	}
 
 	constructor(metadata, orientation, panelHeight, instanceId) {
@@ -322,9 +331,8 @@ class Eye extends Applet.Applet {
 	}
 
 	setEyePropertyUpdate() {
-		const margin = 2 * this.eye_margin;
-		this.area.set_width(EYE_AREA_WIDTH + margin);
-		this.area.set_height(EYE_AREA_HEIGHT + margin);
+		this.area.set_width(EYE_AREA_WIDTH + 2 * this.eye_margin);
+		this.area.set_height(EYE_AREA_HEIGHT);
 		this.area.queue_repaint();
 	}
 
@@ -396,7 +404,8 @@ class Eye extends Applet.Applet {
 			iris_color: foreground_color,
 			pupil_color: foreground_color,
 			line_width: this.eye_line_width,
-			is_eye_active: this.eye_activated
+			is_eye_active: this.eye_activated,
+			padding: this.eye_vertical_padding,
 		};
 
 		if (this.eye_activated) {

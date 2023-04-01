@@ -29,6 +29,7 @@
 				"eye-mode",
 				"eye-line-width",
 				"eye-margin",
+				"eye-vertical-padding",
 				"eye-repaint-interval",
 				"deactivate-on-fullscreen",
 				"eye-activate-by-default"
@@ -98,12 +99,21 @@
 	},
 	"eye-margin": {
 		"type": "spinbutton",
-		"default": 4,
+		"default": 5,
 		"min": 1,
 		"max": 10,
 		"step": 1,
 		"units": "px",
-		"description": "Margin Size"
+		"description": "Horizontal Margin"
+	},
+	"eye-vertical-padding": {
+		"type": "spinbutton",
+		"default": 2,
+		"min": 1,
+		"max": 10,
+		"step": 1,
+		"units": "px",
+		"description": "Vertical Padding"
 	},
 	"eye-repaint-interval": {
 		"type": "spinbutton",
