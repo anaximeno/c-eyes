@@ -100,7 +100,7 @@
 	"eye-margin": {
 		"type": "spinbutton",
 		"default": 6,
-		"min": 1,
+		"min": 0,
 		"max": 10,
 		"step": 1,
 		"units": "px",
@@ -109,7 +109,7 @@
 	"eye-vertical-padding": {
 		"type": "spinbutton",
 		"default": 2,
-		"min": 1,
+		"min": 0,
 		"max": 10,
 		"step": 1,
 		"units": "px",
