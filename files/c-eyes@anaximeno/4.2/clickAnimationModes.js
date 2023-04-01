@@ -132,7 +132,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
             scale_x: 1,
             scale_y: 1,
             opacity: options.opacity,
-            time: (options.timeout * 0.4) / 1000
+            time: (options.timeout * 0.4) / 1000,
             transition: "easeInOutCubic",
             onComplete: () => {
                 Tweener.addTween(actor, {
@@ -141,7 +141,7 @@ class BounceBackClickAnimationMode extends ClickAnimationMode {
                     y: mouse_y,
                     scale_x: 0,
                     scale_y: 0,
-                    time: (options.timeout * 0.6) / 1000
+                    time: (options.timeout * 0.6) / 1000,
                     transition: "easeInOutCubic",
                     onComplete: () => {
                         Main.uiGroup.remove_child(actor);
