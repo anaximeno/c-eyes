@@ -27,10 +27,10 @@ const { Atspi, GLib, Gio, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
 const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
-const { Debouncer } = require("./helper.js");
+const { Debouncer, Point2D } = require("./helper.js");
 
 const CLICK_DEBOUNCE_INTERVAL = 2;
-
+const EYE_REDRAW_ANGLE_THRESHOLD = 0.005;
 const EYE_AREA_WIDTH = 28;
 const EYE_AREA_HEIGHT = 16;
 
@@ -366,6 +366,29 @@ class Eye extends Applet.Applet {
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
+	_eye_area_pos() {
+		let area_x = 0;
+		let area_y = 0;
+		let obj = this.area;
+
+		do {
+			let [tx, ty] = [0, 0];
+
+			try {
+				[tx, ty] = obj.get_position();
+			} catch (e) {
+				//
+			}
+
+			area_x += tx;
+			area_y += ty;
+
+			obj = obj.get_parent();
+		} while (obj);
+
+		return [area_x, area_y];
+	}
+
 	_click_animation(clickType, color) {
 		let icon = this._get_icon_cached(this.data_dir, this.mouse_click_mode, clickType, color);
 
@@ -384,8 +407,11 @@ class Eye extends Applet.Applet {
 
 	_eye_draw(area) {
 		const foreground_color = this.area.get_theme_node().get_foreground_color();
+		const [area_x, area_y] = this._eye_area_pos();
 
 		let options = {
+			area_x: area_x,
+			area_y: area_y,
 			eye_color: foreground_color,
 			iris_color: foreground_color,
 			pupil_color: foreground_color,
@@ -428,13 +454,22 @@ class Eye extends Applet.Applet {
 	_eye_timeout() {
 		let [mouse_x, mouse_y, mask] = global.get_pointer();
 
-		if (mouse_x !== this._last_mouse_x || mouse_y !== this._last_mouse_y) {
+		if (!this._last_mouse_x || !this._last_mouse_y ||
+			this._angle_between_last_mouse_pos(mouse_x, mouse_y) > EYE_REDRAW_ANGLE_THRESHOLD
+		) {
 			this._last_mouse_x = mouse_x;
 			this._last_mouse_y = mouse_y;
 			this.area.queue_repaint();
 		}
 
 		return true;
+	}
+
+	_angle_between_last_mouse_pos(current_x, current_y) {
+		const [ox, oy] = this._eye_area_pos();
+		const lastMousePos = new Point2D(this._last_mouse_x - ox, this._last_mouse_y - oy);
+		const mousePos = new Point2D(current_x - ox, current_y - oy);
+		return mousePos.angle_between(lastMousePos, new Point2D(ox, oy));
 	}
 }
 
