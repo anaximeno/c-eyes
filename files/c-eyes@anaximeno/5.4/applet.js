@@ -454,7 +454,7 @@ class Eye extends Applet.Applet {
 	_eye_timeout() {
 		let [mouse_x, mouse_y, mask] = global.get_pointer();
 
-		if (!this._last_mouse_x || !this._last_mouse_y ||
+		if (this._last_mouse_x == undefined || this._last_mouse_y == undefined ||
 			this._angle_between_last_mouse_pos(mouse_x, mouse_y) > EYE_REDRAW_ANGLE_THRESHOLD
 		) {
 			this._last_mouse_x = mouse_x;
@@ -469,7 +469,8 @@ class Eye extends Applet.Applet {
 		const [ox, oy] = this._eye_area_pos();
 		const lastMousePos = new Point2D(this._last_mouse_x - ox, this._last_mouse_y - oy);
 		const mousePos = new Point2D(current_x - ox, current_y - oy);
-		return mousePos.angle_between(lastMousePos, new Point2D(ox, oy));
+		// TODO: test if there is less overhead with only a functional approach
+		return mousePos.angle_between(lastMousePos);
 	}
 }
 
