@@ -314,6 +314,7 @@ class Eye extends Applet.Applet {
 	}
 
 	set_mouse_circle_property_update(checkCache = true) {
+		if (checkCache == false) this._file_mem_cache = {};
 		this._mouse_circle_create_data_icon('left_click', this.mouse_left_click_color, checkCache);
 		this._mouse_circle_create_data_icon('right_click', this.mouse_right_click_color, checkCache);
 		this._mouse_circle_create_data_icon('middle_click', this.mouse_middle_click_color, checkCache);
