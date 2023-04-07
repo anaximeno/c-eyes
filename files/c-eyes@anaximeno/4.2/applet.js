@@ -30,7 +30,7 @@ const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
 const { Debouncer } = require("./helper.js");
 
 const CLICK_DEBOUNCE_INTERVAL = 2;
-
+const EYE_REDRAW_ANGLE_THRESHOLD = 0.005;
 const EYE_AREA_WIDTH = 28;
 const EYE_AREA_HEIGHT = 16;
 
@@ -228,8 +228,8 @@ class Eye extends Applet.Applet {
 
 		this.set_active(true);
 		this.set_mouse_circle_property_update(false);
-		this.set_mouse_circle_enable(this.mouse_click_show);
-		this._update_tooltip();
+		this.set_mouse_circle_active(this.mouse_click_show);
+		this.update_tooltip();
 	}
 
 	get mouse_click_show() {
@@ -244,11 +244,11 @@ class Eye extends Applet.Applet {
 		this.eye_activated = !this.eye_activated;
 
 		if (this.mouse_click_enable) {
-			this.set_mouse_circle_enable(this.mouse_click_show);
+			this.set_mouse_circle_active(this.mouse_click_show);
 		}
 
 		this.area.queue_repaint();
-		this._update_tooltip();
+		this.update_tooltip();
 	}
 
 	on_property_updated(event, opts = { mouse_property_update: true, eye_property_update: true }) {
@@ -256,12 +256,12 @@ class Eye extends Applet.Applet {
 			this.set_mouse_circle_property_update(true);
 		if (opts.eye_property_update)
 			this.set_eye_property_update();
-		this._update_tooltip();
+		this.update_tooltip();
 	}
 
 	on_mouse_click_enable_updated(event) {
 		this.on_property_updated(event);
-		this.set_mouse_circle_enable(this.mouse_click_show);
+		this.set_mouse_circle_active(this.mouse_click_show);
 		this.area.queue_repaint();
 	}
 
@@ -270,7 +270,7 @@ class Eye extends Applet.Applet {
 
 		if (this.eye_activate_by_default) {
 			this.eye_activated = this.eye_activate_by_default;
-			this.set_mouse_circle_enable(this.mouse_click_show);
+			this.set_mouse_circle_active(this.mouse_click_show);
 			this.area.queue_repaint();
 		}
 	}
@@ -279,14 +279,14 @@ class Eye extends Applet.Applet {
 		if (this.deactivate_on_fullscreen) {
 			let monitor = global.screen.get_current_monitor();
 			let inFullscreen = global.screen.get_monitor_in_fullscreen(monitor);
-			this.set_mouse_circle_enable(!inFullscreen && this.mouse_click_show);
+			this.set_mouse_circle_active(!inFullscreen && this.mouse_click_show);
 			this.set_active(!inFullscreen);
 		}
 	}
 
 	destroy() {
 		this.signals.disconnectAllSignals();
-		this.set_mouse_circle_enable(false);
+		this.set_mouse_circle_active(false);
 		this.set_active(false);
 		this.area.destroy();
 		this.settings.finalize();
@@ -306,7 +306,7 @@ class Eye extends Applet.Applet {
 			this.signals.connect(this.area, 'repaint', this._eye_draw, this);
 
 			this._eye_update_handler = Mainloop.timeout_add(
-				this.eye_repaint_interval, this._eyeTimeout.bind(this)
+				this.eye_repaint_interval, this._eye_timeout.bind(this)
 			);
 
 			this.area.queue_repaint();
@@ -326,7 +326,7 @@ class Eye extends Applet.Applet {
 		this.area.queue_repaint();
 	}
 
-	set_mouse_circle_enable(enabled) {
+	set_mouse_circle_active(enabled) {
 		if (enabled == null) {
 			enabled = this.mouse_click_show;
 		}
@@ -339,7 +339,7 @@ class Eye extends Applet.Applet {
 		}
 	}
 
-	_update_tooltip() {
+	update_tooltip() {
 		let complement = this.mouse_click_enable ? _("effects enabled") : _("effects disabled");
 
 		if (this.eye_activated) {
@@ -370,6 +370,29 @@ class Eye extends Applet.Applet {
 		let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 	}
 
+	_eye_area_pos() {
+		let area_x = 0;
+		let area_y = 0;
+		let obj = this.area;
+
+		do {
+			let [tx, ty] = [0, 0];
+
+			try {
+				[tx, ty] = obj.get_position();
+			} catch (e) {
+				//
+			}
+
+			area_x += tx;
+			area_y += ty;
+
+			obj = obj.get_parent();
+		} while (obj);
+
+		return [area_x, area_y];
+	}
+
 	_click_animation(clickType, color) {
 		let icon = this._get_icon_cached(this.data_dir, this.mouse_click_mode, clickType, color);
 
@@ -377,7 +400,7 @@ class Eye extends Applet.Applet {
 			let options = {
 				icon_size: this.mouse_click_image_size,
 				opacity: this.mouse_click_opacity,
-				timeout: this.fade_timeout
+				timeout: this.fade_timeout,
 			};
 
 			ClickAnimationModeFactory
@@ -388,8 +411,11 @@ class Eye extends Applet.Applet {
 
 	_eye_draw(area) {
 		const foreground_color = this.area.get_theme_node().get_foreground_color();
+		const [area_x, area_y] = this._eye_area_pos();
 
 		let options = {
+			area_x: area_x,
+			area_y: area_y,
 			eye_color: foreground_color,
 			iris_color: foreground_color,
 			pupil_color: foreground_color,
@@ -430,15 +456,41 @@ class Eye extends Applet.Applet {
 	}
 
 	_eye_timeout() {
-		let [mouse_x, mouse_y, mask] = global.get_pointer();
-
-		if (mouse_x !== this._last_mouse_x || mouse_y !== this._last_mouse_y) {
-			this._last_mouse_x = mouse_x;
-			this._last_mouse_y = mouse_y;
+		if (this._eye_should_redraw()) {
 			this.area.queue_repaint();
 		}
 
 		return true;
+	}
+
+	_eye_should_redraw() {
+		const [mouse_x, mouse_y, _] = global.get_pointer();
+		let it_should_redraw = true;
+
+		if (this._last_mouse_x == mouse_x && this._last_mouse_y == mouse_y) {
+			it_should_redraw = false;
+		} else if (this._last_mouse_x == undefined || this._last_mouse_y == undefined) {
+			it_should_redraw = true;
+		} else {
+			const dist_from_origin = (x, y) => Math.sqrt(x * x + y * y);
+
+			const [ox, oy] = this._eye_area_pos();
+			const [last_x, last_y] = [this._last_mouse_x - ox, this._last_mouse_y - oy];
+			const [current_x, current_y] = [mouse_x - ox, mouse_y - oy];
+
+			const dist_prod = dist_from_origin(last_x, last_y) * dist_from_origin(current_x, current_y);
+			const dot_prod = current_x * last_x + current_y * last_y;
+			const angle = dist_prod > 0 ? Math.acos(dot_prod / dist_prod) : 0;
+
+			it_should_redraw = angle > EYE_REDRAW_ANGLE_THRESHOLD;
+		}
+
+		if (it_should_redraw) {
+			this._last_mouse_x = mouse_x;
+			this._last_mouse_y = mouse_y;
+		}
+
+		return it_should_redraw;
 	}
 }
 
