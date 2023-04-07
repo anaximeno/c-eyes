@@ -190,6 +190,11 @@ class Eye extends Applet.Applet {
 					(e) => this.on_property_updated(e,
 						{ eye_property_update: true, mouse_property_update: false })),
 			},
+			{
+				key: "deactivate-effects-on-fullscreen",
+				value: "deactivate_effects_on_fullscreen",
+				cb: null,
+			}
 		];
 
 		_settings.forEach(
@@ -272,11 +277,15 @@ class Eye extends Applet.Applet {
 	}
 
 	on_fullscreen_changed() {
+		const monitor = global.screen.get_current_monitor();
+		const isInFullscreen = global.screen.get_monitor_in_fullscreen(monitor);
+
 		if (this.deactivate_on_fullscreen) {
-			let monitor = global.screen.get_current_monitor();
-			let inFullscreen = global.screen.get_monitor_in_fullscreen(monitor);
-			this.set_mouse_circle_active(!inFullscreen && this.mouse_click_show);
-			this.set_active(!inFullscreen);
+			this.set_active(!isInFullscreen);
+		}
+
+		if (this.deactivate_effects_on_fullscreen) {
+			this.set_mouse_circle_active(!isInFullscreen && this.mouse_click_show);
 		}
 	}
 

@@ -51,7 +51,8 @@
 				"mouse-click-enable",
 				"mouse-click-mode",
 				"mouse-click-image-size",
-				"click-animation-mode"
+				"click-animation-mode",
+				"deactivate-effects-on-fullscreen"
 			]
 		},
 		"click-events": {
@@ -201,6 +202,11 @@
 			"Expand": "expand"
 		},
 		"dependency": "mouse-click-enable"
+	},
+	"deactivate-effects-on-fullscreen": {
+		"type": "checkbox",
+		"default": false,
+		"description": "Deactivate On Fullscreen"
 	},
 	"mouse-left-click-enable": {
 		"type": "checkbox",
