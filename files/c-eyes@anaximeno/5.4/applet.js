@@ -30,7 +30,7 @@ const { ClickAnimationModeFactory } = require("./clickAnimationModes.js");
 const { Debouncer } = require("./helper.js");
 
 const CLICK_DEBOUNCE_INTERVAL = 2;
-const EYE_REDRAW_ANGLE_THRESHOLD = 0.005;
+const EYE_REDRAW_ANGLE_THRESHOLD = 0.009;
 const EYE_AREA_WIDTH = 28;
 const EYE_AREA_HEIGHT = 16;
 
