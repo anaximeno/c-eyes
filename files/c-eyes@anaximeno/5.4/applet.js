@@ -372,21 +372,20 @@ class Eye extends Applet.Applet {
 	}
 
 	_eye_area_pos() {
-		let area_x = 0;
-		let area_y = 0;
 		let obj = this.area;
 
+		let area_x = 0;
+		let area_y = 0;
+
 		do {
-			let [tx, ty] = [0, 0];
+			let pos = obj.get_position();
 
-			try {
-				[tx, ty] = obj.get_position();
-			} catch (e) {
-				//
+			if (pos) {
+				let [tx, ty] = pos;
+
+				area_x += tx;
+				area_y += ty;
 			}
-
-			area_x += tx;
-			area_y += ty;
 
 			obj = obj.get_parent();
 		} while (obj);
