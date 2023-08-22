@@ -223,6 +223,9 @@ class Eye extends Applet.Applet {
 
 		this.signals = new SignalManager.SignalManager(null);
 		this.signals.connect(global.screen, 'in-fullscreen-changed', this.on_fullscreen_changed, this);
+
+		Atspi.init();
+
 		this._mouseListener = Atspi.EventListener.new(this._mouse_click_event.bind(this));
 
 		this._file_mem_cache = {};
