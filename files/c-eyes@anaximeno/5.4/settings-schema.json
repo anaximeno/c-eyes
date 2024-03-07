@@ -31,6 +31,7 @@
 				"eye-margin",
 				"eye-vertical-padding",
 				"eye-repaint-interval",
+				"eye-repaint-angle",
 				"deactivate-on-fullscreen",
 				"eye-activate-by-default"
 			]
@@ -123,7 +124,18 @@
 		"max": 200,
 		"step": 5,
 		"units": "ms",
-		"description": "Repaint Interval"
+		"description": "Eye Update Interval",
+		"tooltip": "This setting controls the time to redraw the eye again. Lower values (measured in miliseconds) result in smoother animation but require more processing power."
+	},
+	"eye-repaint-angle": {
+		"type": "spinbutton",
+		"default": 0.05,
+		"min": 0,
+		"max": 1,
+		"step": 0.05,
+		"units": "radians",
+		"description": "Eye Update Sensitivity",
+		"tooltip": "This setting controls the minimum angle change between mouse movements required to redraw the eye. Lower values (measured in radians) result in smoother animation but require more processing power."
 	},
 	"eye-activate-by-default": {
 		"type": "checkbox",
