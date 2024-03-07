@@ -40,6 +40,8 @@
 			"type": "section",
 			"title": "Colors",
 			"keys": [
+				"fill-bulb-color-painting",
+				"fill-lids-color-painting",
 				"eye-clicked-color",
 				"iris-clicked-color",
 				"pupil-clicked-color"
@@ -85,9 +87,7 @@
 		"description": "Mode",
 		"options": {
 			"Lids": "lids",
-			"Lids Filled": "lids-fill",
-			"Bulb": "bulb",
-			"Bulb Filled": "bulb-fill"
+			"Bulb": "bulb"
 		}
 	},
 	"eye-line-width": {
@@ -161,6 +161,18 @@
 		"type": "colorchooser",
 		"default": "#40BEBF",
 		"description": "Activated Pupil Color"
+	},
+	"fill-lids-color-painting": {
+		"dependency": "eye-mode=lids",
+		"type": "checkbox",
+		"default": false,
+		"description": "Fill Colors Inside the Eye"
+	},
+	"fill-bulb-color-painting": {
+		"dependency": "eye-mode=bulb",
+		"type": "checkbox",
+		"default": false,
+		"description": "Fill the Colors Inside the Eye"
 	},
 	"mouse-click-enable": {
 		"type": "checkbox",

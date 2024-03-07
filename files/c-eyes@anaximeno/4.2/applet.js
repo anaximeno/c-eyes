@@ -130,6 +130,16 @@ class Eye extends Applet.Applet {
 				cb: this.on_property_updated,
 			},
 			{
+				key: "fill-lids-color-painting",
+				value: "fill_lids_color_painting",
+				cb: this.on_property_updated
+			},
+			{
+				key: "fill-bulb-color-painting",
+				value: "fill_bulb_color_painting",
+				cb: this.on_property_updated
+			},
+			{
 				key: "mouse-click-image-size",
 				value: "mouse_click_image_size",
 				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
