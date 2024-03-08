@@ -444,9 +444,9 @@ class Eye extends Applet.Applet {
 			eye_color: foreground_color,
 			iris_color: foreground_color,
 			pupil_color: foreground_color,
-			line_width: this.eye_line_width,
 			is_eye_active: this.eye_activated,
-			padding: this.eye_vertical_padding,
+			line_width: (this.eye_line_width * global.ui_scale),
+			padding: (this.eye_vertical_padding * global.ui_scale),
 			lids_fill: this.fill_lids_color_painting,
 			bulb_fill: this.fill_bulb_color_painting,
 		};
