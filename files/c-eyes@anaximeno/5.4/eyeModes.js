@@ -32,8 +32,8 @@ class EyeMode {
 
 class EyelidMode extends EyeMode {
     drawEye(area, options) {
-        let [mouse_x, mouse_y, mask] = global.get_pointer();
         let [area_width, area_height] = area.get_surface_size();
+        let [mouse_x, mouse_y] = [options.mouse_x, options.mouse_y];
         let [area_x, area_y] = [options.area_x, options.area_y];
 
         area_x += area_width / 2;
@@ -130,8 +130,8 @@ class EyelidMode extends EyeMode {
 
 class BulbMode extends EyeMode {
     drawEye(area, options) {
-        let [mouse_x, mouse_y, mask] = global.get_pointer();
         let [area_width, area_height] = area.get_surface_size();
+        let [mouse_x, mouse_y] = [options.mouse_x, options.mouse_y];
         let [area_x, area_y] = [options.area_x, options.area_y];
 
         area_x += area_width / 2;

@@ -436,11 +436,14 @@ class Eye extends Applet.Applet {
 
 	_eye_draw(area) {
 		const foreground_color = this.area.get_theme_node().get_foreground_color();
+		const [mouse_x, mouse_y, _] = global.get_pointer();
 		const [area_x, area_y] = this._eye_area_pos();
 
 		let options = {
 			area_x: area_x,
 			area_y: area_y,
+			mouse_x: mouse_x,
+			mouse_y: mouse_y,
 			eye_color: foreground_color,
 			iris_color: foreground_color,
 			pupil_color: foreground_color,
