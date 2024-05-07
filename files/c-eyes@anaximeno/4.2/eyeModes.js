@@ -19,8 +19,6 @@
 
 const { Clutter } = imports.gi;
 
-const DEFAULT_VERTICAL_PADDING = 0.1;
-
 class EyeMode {
     /**
      * Draws the eye on the panel
@@ -38,8 +36,6 @@ class EyelidMode extends EyeMode {
         let [area_width, area_height] = area.get_surface_size();
         let [area_x, area_y] = [options.area_x, options.area_y];
 
-        const padding = options.padding || DEFAULT_VERTICAL_PADDING;
-
         area_x += area_width / 2;
         area_y += area_height / 2;
 
@@ -49,7 +45,7 @@ class EyelidMode extends EyeMode {
         const mouse_ang = Math.atan2(mouse_y, mouse_x);
         let mouse_rad = Math.sqrt(mouse_x * mouse_x + mouse_y * mouse_y);
 
-        const eye_rad = (area_height - padding) / 2;
+        const eye_rad = (area_height - options.padding) / 2;
         const iris_rad = eye_rad * 0.5;
         const pupil_rad = iris_rad * 0.4;
 
@@ -138,8 +134,6 @@ class BulbMode extends EyeMode {
         let [area_width, area_height] = area.get_surface_size();
         let [area_x, area_y] = [options.area_x, options.area_y];
 
-        const padding = options.padding || DEFAULT_VERTICAL_PADDING;
-
         area_x += area_width / 2;
         area_y += area_height / 2;
 
@@ -149,7 +143,7 @@ class BulbMode extends EyeMode {
         let mouse_rad = Math.sqrt(mouse_x * mouse_x + mouse_y * mouse_y);
         const mouse_ang = Math.atan2(mouse_y, mouse_x);
 
-        const eye_rad = (area_height - padding) / 2.3;
+        const eye_rad = (area_height - options.padding) / 2.3;
         const iris_rad = eye_rad * 0.6;
         const pupil_rad = iris_rad * 0.4;
 
