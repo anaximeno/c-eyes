@@ -51,6 +51,12 @@ function _(text) {
 	return locText;
 }
 
+const UPDATE_CHANGE_MSG = _(
+	"📢 The click effects will be removed from this applet on the version 6.2 of Cinnamon\n" +
+	"and moved to a new extension named mouse-click-effects which can already be installed\n" +
+	"on the Cinnamon Extensions settings module for versions of Cinnamon >= 5.4"
+);
+
 class Eye extends Applet.Applet {
 	_get_icon_cached(dir, mode, click_type, color) {
 		let key = `${dir}${mode}${click_type}${color}`;
@@ -373,8 +379,9 @@ class Eye extends Applet.Applet {
 	}
 
 	update_tooltip() {
+		let message = _("")
 		let tip = this.eye_activated ? _("click to deactivate the eye") : _("click to activate the eye");
-		this.set_applet_tooltip(`<b>${_('TIP')}:</b> ` + tip, true);
+		this.set_applet_tooltip(`<b>${_('TIP')}:</b> ` + tip + "\n" + UPDATE_CHANGE_MSG, true);
 	}
 
 	_mouse_circle_create_data_icon(name, color, checkCache) {
