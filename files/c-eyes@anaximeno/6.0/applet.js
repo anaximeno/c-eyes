@@ -53,13 +53,13 @@ class Eye extends Applet.Applet {
 		this.area = new St.DrawingArea();
 		this.actor.add(this.area);
 
+		this.eye_painter = EyeModeFactory.createEyeMode(this.mode);
+
 		this.signals = new SignalManager.SignalManager(null);
 		this.signals.connect(global.screen, 'in-fullscreen-changed', this.on_fullscreen_changed, this);
 
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
-
-		this.activated = this.activate_by_default;
 
 		this.set_active(true);
 		this.update_tooltip();
@@ -94,39 +94,39 @@ class Eye extends Applet.Applet {
 				cb: d.debounce(e => this.on_property_updated(e), 400),
 			},
 			{
-				key: "eye-clicked-color",
-				value: "eye_clicked_color",
+				key: "base-color",
+				value: "base_color",
 				cb: this.on_property_updated,
 			},
 			{
-				key: "iris-clicked-color",
-				value: "iris_clicked_color",
+				key: "iris-color",
+				value: "iris_color",
 				cb: this.on_property_updated,
 			},
 			{
-				key: "pupil-clicked-color",
-				value: "pupil_clicked_color",
+				key: "pupil-color",
+				value: "pupil_color",
 				cb: this.on_property_updated,
 			},
 			{
 				key: "fill-lids-color-painting",
 				value: "fill_lids_color_painting",
-				cb: this.on_property_updated
+				cb: this.on_property_updated,
 			},
 			{
 				key: "fill-bulb-color-painting",
 				value: "fill_bulb_color_painting",
-				cb: this.on_property_updated
-			},
-			{
-				key: "activate-by-default",
-				value: "activate_by_default",
-				cb: this.on_activated_by_default_updated,
+				cb: this.on_property_updated,
 			},
 			{
 				key: "deactivate-on-fullscreen",
 				value: "deactivate_on_fullscreen",
 				cb: null,
+			},
+			{
+				key: "use-alternative-colors",
+				value: "use_alternative_colors",
+				cb: this.on_property_updated,
 			},
 			{
 				key: "vertical-padding",
@@ -151,23 +151,21 @@ class Eye extends Applet.Applet {
 	}
 
 	on_applet_clicked(event) {
-		this.activated = !this.activated;
 		this.area.queue_repaint();
 		this.update_tooltip();
 	}
 
 	on_property_updated(event) {
-		this.set_property_update();
 		this.update_tooltip();
-	}
 
-	on_activated_by_default_updated(event) {
-		this.on_property_updated(event);
+		this.area.set_width((this.area_width + 2 * this.margin) * global.ui_scale);
+		this.area.set_height(this.area_height * global.ui_scale);
 
-		if (this.activate_by_default) {
-			this.activated = this.activate_by_default;
-			this.area.queue_repaint();
+		if (this.eye_painter.mode != this.mode) {
+			this.eye_painter = EyeModeFactory.createEyeMode(this.mode);
 		}
+
+		this.area.queue_repaint();
 	}
 
 	on_fullscreen_changed() {
@@ -199,7 +197,7 @@ class Eye extends Applet.Applet {
 	}
 
 	set_active(enabled) {
-		this.set_property_update();
+		this.on_property_updated();
 
 		if (this._update_handler) {
 			Mainloop.source_remove(this._update_handler);
@@ -219,15 +217,9 @@ class Eye extends Applet.Applet {
 		}
 	}
 
-	set_property_update() {
-		this.area.set_width((this.area_width + 2 * this.margin) * global.ui_scale);
-		this.area.set_height(this.area_height * global.ui_scale);
-		this.area.queue_repaint();
-	}
-
 	update_tooltip() {
-		let tip = this.activated ? _("click to deactivate the eye") : _("click to activate the eye");
-		this.set_applet_tooltip(`<b>${_('TIP')}:</b> ` + tip, true);
+		// TODO: add a useful tooltip
+		this.set_applet_tooltip(_("I see..."), false);
 	}
 
 	get_area_position() {
@@ -253,37 +245,42 @@ class Eye extends Applet.Applet {
 	}
 
 	paint_eye(area) {
-		const foreground_color = this.area.get_theme_node().get_foreground_color();
+		const theme_node = this.area.get_theme_node();
 		const [mouse_x, mouse_y, _] = global.get_pointer();
 		const [area_x, area_y] = this.get_area_position();
 
-		let options = {
+		let base_color = theme_node.get_foreground_color();
+		let iris_color = theme_node.get_foreground_color();
+		let pupil_color = theme_node.get_foreground_color();
+
+		if (this.use_alternative_colors) {
+			let [ok, color] = Clutter.Color.from_string(this.base_color);
+			base_color = ok ? color : base_color;
+
+			[ok, color] = Clutter.Color.from_string(this.iris_color);
+			iris_color = ok ? color : iris_color;
+
+			[ok, color] = Clutter.Color.from_string(this.pupil_color);
+			pupil_color = ok ? color : pupil_color;
+		}
+
+		if (this.eye_painter.mode != this.mode) {
+			this.eye_painter = EyeModeFactory.createEyeMode(this.mode);
+		}
+
+		this.eye_painter.drawEye(area, {
 			area_x: area_x,
 			area_y: area_y,
 			mouse_x: mouse_x,
 			mouse_y: mouse_y,
-			eye_color: foreground_color,
-			iris_color: foreground_color,
-			pupil_color: foreground_color,
-			is_eye_active: this.activated,
+			base_color: base_color,
+			iris_color: iris_color,
+			pupil_color: pupil_color,
 			line_width: (this.line_width * global.ui_scale),
 			padding: (this.vertical_padding * global.ui_scale),
-			lids_fill: this.fill_lids_color_painting,
-			bulb_fill: this.fill_bulb_color_painting,
-		};
-
-		if (this.activated) {
-			let [ok, color] = Clutter.Color.from_string(this.eye_clicked_color);
-			options.eye_color = ok ? color : options.eye_color;
-
-			[ok, color] = Clutter.Color.from_string(this.iris_clicked_color);
-			options.iris_color = ok ? color : options.iris_color;
-
-			[ok, color] = Clutter.Color.from_string(this.pupil_clicked_color);
-			options.pupil_color = ok ? color : options.pupil_color;
-		}
-
-		EyeModeFactory.createEyeMode(this.mode).drawEye(area, options);
+			lids_fill: this.fill_lids_color_painting && this.use_alternative_colors,
+			bulb_fill: this.fill_bulb_color_painting && this.use_alternative_colors,
+		});
 	}
 
 	should_redraw() {

@@ -60,36 +60,37 @@
 		"description": "Eye Update Sensitivity",
 		"tooltip": "This setting controls the minimum angle change between mouse movements required to redraw the eye. Lower values (measured in radians) result in smoother animation but require more processing power."
 	},
-	"activate-by-default": {
-		"type": "checkbox",
-		"default": false,
-		"description": "Start Activated"
-	},
 	"deactivate-on-fullscreen": {
 		"type": "checkbox",
 		"default": true,
 		"description": "Deactivate On Fullscreen"
 	},
+	"use-alternative-colors": {
+		"type": "switch",
+		"default": false,
+		"description": "Use Alternative Colors for the Eye"
+	},
 
 	"colors": {
 		"type": "section",
-		"description": "Colors"
+		"description": "Colors",
+		"dependency": "use-alternative-colors=true"
 	},
 
-	"eye-clicked-color": {
+	"base-color": {
 		"type": "colorchooser",
 		"default": "#0c75de",
-		"description": "Activated Base Color"
+		"description": "Base Color"
 	},
-	"iris-clicked-color": {
+	"iris-color": {
 		"type": "colorchooser",
 		"default": "#4077BF",
-		"description": "Activated Iris Color"
+		"description": "Iris Color"
 	},
-	"pupil-clicked-color": {
+	"pupil-color": {
 		"type": "colorchooser",
 		"default": "#40BEBF",
-		"description": "Activated Pupil Color"
+		"description": "Pupil Color"
 	},
 	"fill-lids-color-painting": {
 		"dependency": "mode=lids",
