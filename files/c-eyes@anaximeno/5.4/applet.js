@@ -17,6 +17,8 @@
  */
 'use strict';
 
+// NOTE: this is frozen on the 1.15.x versions, and might only receive patch updates
+
 const Mainloop = imports.mainloop;
 const Settings = imports.ui.settings;
 const Applet = imports.ui.applet;
