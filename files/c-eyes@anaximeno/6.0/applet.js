@@ -71,7 +71,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "repaint-interval",
 				value: "repaint_interval",
-				cb: d.debounce(e => this.set_active(true), 400),
+				cb: d.debounce(e => this.set_active(true), 300),
 			},
 			{
 				key: "repaint-angle",
@@ -86,12 +86,12 @@ class Eye extends Applet.Applet {
 			{
 				key: "line-width",
 				value: "line_width",
-				cb: d.debounce(e => this.on_property_updated(e), 400),
+				cb: d.debounce(e => this.on_property_updated(e), 300),
 			},
 			{
 				key: "margin",
 				value: "margin",
-				cb: d.debounce(e => this.on_property_updated(e), 400),
+				cb: d.debounce(e => this.on_property_updated(e), 300),
 			},
 			{
 				key: "base-color",
@@ -131,8 +131,13 @@ class Eye extends Applet.Applet {
 			{
 				key: "vertical-padding",
 				value: "vertical_padding",
-				cb: d.debounce(e => this.on_property_updated(e)),
+				cb: d.debounce(e => this.on_property_updated(e), 300),
 			},
+			{
+				key: "tooltip-message",
+				value: "tooltip_message",
+				cb: d.debounce(e => this.update_tooltip(), 100),
+			}
 		];
 
 		let settings = new Settings.AppletSettings(this, uuid, instanceId);
@@ -218,8 +223,7 @@ class Eye extends Applet.Applet {
 	}
 
 	update_tooltip() {
-		// TODO: add a useful tooltip
-		this.set_applet_tooltip(_("I see..."), false);
+		this.set_applet_tooltip(_(this.tooltip_message), false);
 	}
 
 	get_area_position() {
