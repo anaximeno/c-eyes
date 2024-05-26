@@ -84,7 +84,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "eye-repaint-interval",
 				value: "eye_repaint_interval",
-				cb: settingsDebouncer.debounce((e) => this.set_active(true), 400),
+				cb: settingsDebouncer.debounce((e) => this.set_active(true), 300),
 			},
 			{
 				key: "eye-repaint-angle",
@@ -94,7 +94,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "fade-timeout",
 				value: "fade_timeout",
-				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
+				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 300),
 			},
 			{
 				key: "eye-mode",
@@ -109,12 +109,12 @@ class Eye extends Applet.Applet {
 			{
 				key: "eye-line-width",
 				value: "eye_line_width",
-				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
+				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 300),
 			},
 			{
 				key: "eye-margin",
 				value: "eye_margin",
-				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
+				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 300),
 			},
 			{
 				key: "eye-clicked-color",
@@ -144,7 +144,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "mouse-click-image-size",
 				value: "mouse_click_image_size",
-				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
+				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 300),
 			},
 			{
 				key: "mouse-click-enable",
@@ -184,7 +184,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "mouse-click-opacity",
 				value: "mouse_click_opacity",
-				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 400),
+				cb: settingsDebouncer.debounce((e) => this.on_property_updated(e), 300),
 			},
 			{
 				key: "click-animation-mode",
@@ -206,7 +206,7 @@ class Eye extends Applet.Applet {
 				value: "eye_vertical_padding",
 				cb: settingsDebouncer.debounce(
 					(e) => this.on_property_updated(e,
-						{ eye_property_update: true, mouse_property_update: false })),
+						{ eye_property_update: true, mouse_property_update: false }), 300),
 			},
 			{
 				key: "deactivate-effects-on-fullscreen",
