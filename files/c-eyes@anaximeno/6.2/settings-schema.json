@@ -51,10 +51,10 @@
 		"tooltip": "This setting controls the time to redraw the eye again. Lower values (measured in miliseconds) result in smoother animation but require more processing power."
 	},
 	"repaint-angle": {
-		"type": "spinbutton",
+		"type": "scale",
 		"default": 0.05,
 		"min": 0,
-		"max": 1,
+		"max": 0.5,
 		"step": 0.05,
 		"units": "radians",
 		"description": "Eye Update Sensitivity",
