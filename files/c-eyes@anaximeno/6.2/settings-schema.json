@@ -24,10 +24,10 @@
 	},
 	"margin": {
 		"type": "spinbutton",
-		"default": 8,
-		"min": -10,
-		"max": 32,
-		"step": 2,
+		"default": 8.0,
+		"min": -16.0,
+		"max": 32.0,
+		"step": 0.5,
 		"units": "px",
 		"description": "Margin"
 	},
@@ -35,8 +35,8 @@
 		"type": "spinbutton",
 		"default": 2,
 		"min": 0,
-		"max": 20,
-		"step": 2,
+		"max": 22,
+		"step": 0.5,
 		"units": "px",
 		"description": "Padding"
 	},
