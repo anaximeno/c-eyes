@@ -58,6 +58,7 @@ class Eye extends Applet.Applet {
 
 		this.signals = new SignalManager.SignalManager(null);
 		this.signals.connect(global.screen, 'in-fullscreen-changed', this.on_fullscreen_changed, this);
+        this.signals.connect(Main.layoutManager, 'monitors-changed', this.on_property_updated, this);
 
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
@@ -177,7 +178,7 @@ class Eye extends Applet.Applet {
 		this.area.queue_repaint();
 	}
 
-	on_property_updated(value) {
+	on_property_updated(value = null) {
 		this.update_sizes();
 		this.area.queue_repaint();
 	}
@@ -234,7 +235,7 @@ class Eye extends Applet.Applet {
 	}
 
 	set_active(enabled) {
-		this.on_property_updated(undefined);
+		this.on_property_updated();
 
 		if (this._update_handler) {
 			Mainloop.source_remove(this._update_handler);
