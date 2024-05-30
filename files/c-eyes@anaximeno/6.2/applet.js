@@ -138,8 +138,8 @@ class Eye extends Applet.Applet {
 				cb: this.on_property_updated,
 			},
 			{
-				key: "vertical-padding",
-				value: "vertical_padding",
+				key: "padding",
+				value: "padding",
 				cb: d.debounce(
 					this.on_property_updated.bind(this),
 					300),
@@ -311,7 +311,7 @@ class Eye extends Applet.Applet {
 			iris_color: iris_color,
 			pupil_color: pupil_color,
 			line_width: (this.line_width * global.ui_scale),
-			padding: (this.vertical_padding * global.ui_scale),
+			padding: (this.padding * global.ui_scale),
 			lids_fill: this.fill_lids_color_painting && this.use_alternative_colors,
 			bulb_fill: this.fill_bulb_color_painting && this.use_alternative_colors,
 		});

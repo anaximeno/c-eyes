@@ -31,7 +31,7 @@
 		"units": "px",
 		"description": "Margin"
 	},
-	"vertical-padding": {
+	"padding": {
 		"type": "spinbutton",
 		"default": 4.0,
 		"min": 0.0,
