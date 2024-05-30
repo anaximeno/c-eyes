@@ -44,6 +44,7 @@ class Eye extends Applet.Applet {
 	constructor(metadata, orientation, panelHeight, instanceId, areaHeight, areaWidth) {
 		super(orientation, panelHeight, instanceId);
 		this.settings = this._setup_settings(metadata.uuid, instanceId);
+		this.orientation  = orientation;
 		this.metadata = metadata;
 		this.area_height = areaHeight;
 		this.area_width = areaWidth;
@@ -163,6 +164,11 @@ class Eye extends Applet.Applet {
 		return settings;
 	}
 
+	on_orientation_changed(orientation) {
+		this.orientation = orientation;
+		this.update_sizes();
+    }
+
 	on_applet_removed_from_panel(deleteConfig) {
 		this.destroy();
 	}
@@ -172,8 +178,7 @@ class Eye extends Applet.Applet {
 	}
 
 	on_property_updated() {
-		this.area.set_width((this.area_width + 2 * this.margin) * global.ui_scale);
-		this.area.set_height(this.area_height * global.ui_scale);
+		this.update_sizes();
 		this.area.queue_repaint();
 	}
 
@@ -209,6 +214,21 @@ class Eye extends Applet.Applet {
 		this.signals.disconnectAllSignals();
 		this.area.destroy();
 		this.settings.finalize();
+	}
+
+	update_sizes() {
+		let extra_width = 0, extra_height = 0;
+
+		if (this.orientation == St.Side.LEFT || this.orientation == St.Side.RIGHT) {
+			this.actor.set_style("padding-top: 0px; padding-bottom: 0px;");
+			extra_height = 2 * this.margin;
+		} else {
+			this.actor.set_style("padding-left: 0px; padding-right: 0px;");
+			extra_width = 2 * this.margin;
+		}
+
+		this.area.set_width((this.area_width + extra_width) * global.ui_scale);
+		this.area.set_height((this.area_height + extra_height) * global.ui_scale);
 	}
 
 	set_active(enabled) {

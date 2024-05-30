@@ -33,7 +33,7 @@
 	},
 	"vertical-padding": {
 		"type": "spinbutton",
-		"default": 2,
+		"default": 4,
 		"min": 0,
 		"max": 22,
 		"step": 0.5,
