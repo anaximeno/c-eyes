@@ -31,6 +31,7 @@ const { Debouncer } = require("./helpers.js");
 
 const UUID = "c-eyes@anaximeno";
 const LOC_DIR = GLib.get_home_dir() + "/.local/share/locale";
+const AREA_DEFAULT_WIDTH = 28;
 
 Gettext.bindtextdomain(UUID, LOC_DIR);
 
@@ -41,12 +42,11 @@ function _(text) {
 
 
 class Eye extends Applet.Applet {
-	constructor(metadata, orientation, panelHeight, instanceId, areaHeight, areaWidth) {
+	constructor(metadata, orientation, panelHeight, instanceId, areaWidth) {
 		super(orientation, panelHeight, instanceId);
 		this.settings = this._setup_settings(metadata.uuid, instanceId);
 		this.orientation  = orientation;
 		this.metadata = metadata;
-		this.area_height = areaHeight;
 		this.area_width = areaWidth;
 
 		this.setAllowedLayout(Applet.AllowedLayout.BOTH);
@@ -72,7 +72,7 @@ class Eye extends Applet.Applet {
 			{
 				key: "repaint-interval",
 				value: "repaint_interval",
-				cb: d.debounce(() => this.set_active(true), 300),
+				cb: d.debounce((value) => this.set_active(true), 300),
 			},
 			{
 				key: "repaint-angle",
@@ -82,9 +82,9 @@ class Eye extends Applet.Applet {
 			{
 				key: "mode",
 				value: "mode",
-				cb: () => {
+				cb: (value) => {
 					this.on_eye_mode_update();
-					this.on_property_updated();
+					this.on_property_updated(value);
 				},
 			},
 			{
@@ -146,9 +146,9 @@ class Eye extends Applet.Applet {
 			{
 				key: "tooltip-message",
 				value: "tooltip_message",
-				cb: d.debounce(() => {
+				cb: d.debounce((value) => {
 					this.update_tooltip();
-					this.on_property_updated();
+					this.on_property_updated(value);
 				}, 100),
 			}
 		];
@@ -177,7 +177,7 @@ class Eye extends Applet.Applet {
 		this.area.queue_repaint();
 	}
 
-	on_property_updated() {
+	on_property_updated(value) {
 		this.update_sizes();
 		this.area.queue_repaint();
 	}
@@ -217,22 +217,24 @@ class Eye extends Applet.Applet {
 	}
 
 	update_sizes() {
-		let extra_width = 0, extra_height = 0;
+		let width = 1, height = 1;
 
 		if (this.orientation == St.Side.LEFT || this.orientation == St.Side.RIGHT) {
 			this.actor.set_style("padding-top: 0px; padding-bottom: 0px;");
-			extra_height = 2 * this.margin;
+			height = (this.area_width + 2 * this.margin) * global.ui_scale;
+			width = this.panel.height;
 		} else {
 			this.actor.set_style("padding-left: 0px; padding-right: 0px;");
-			extra_width = 2 * this.margin;
+			width = (this.area_width + 2 * this.margin) * global.ui_scale;
+			height = this.panel.height;
 		}
 
-		this.area.set_width((this.area_width + extra_width) * global.ui_scale);
-		this.area.set_height((this.area_height + extra_height) * global.ui_scale);
+		this.area.set_width(width);
+		this.area.set_height(height);
 	}
 
 	set_active(enabled) {
-		this.on_property_updated();
+		this.on_property_updated(undefined);
 
 		if (this._update_handler) {
 			Mainloop.source_remove(this._update_handler);
@@ -348,5 +350,5 @@ class Eye extends Applet.Applet {
 }
 
 function main(metadata, orientation, panelHeight, instanceId) {
-	return new Eye(metadata, orientation, panelHeight, instanceId, 16, 28);
+	return new Eye(metadata, orientation, panelHeight, instanceId, AREA_DEFAULT_WIDTH);
 }
