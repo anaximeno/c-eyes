@@ -205,7 +205,7 @@ class Eye extends Applet.Applet {
 	}
 
 	on_eye_mode_update() {
-		if (this.eye_painter && this.eye_painter.mode != this.mode) {
+		if (!this.eye_painter || this.eye_painter.mode != this.mode) {
 			this.eye_painter = EyeModeFactory.createEyeMode(this.mode);
 		}
 	}
