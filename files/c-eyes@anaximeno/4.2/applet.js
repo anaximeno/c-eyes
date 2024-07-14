@@ -250,7 +250,7 @@ class Eye extends Applet.Applet {
 			// of the panel is not correctly accessed, so the position of the eye cannot be estimated correctly,
 			// resulting in the eye looking at the wrong direction, to avoid that we will give it some timeout and
 			// wait first for the switch process to complete.
-			Util.setTimeout(() => this.on_property_updated(), 150);
+			Util.setTimeout(() => this.on_property_updated(), 400);
 		}, this);
 
 		Atspi.init();

@@ -70,7 +70,7 @@ class Eye extends Applet.Applet {
 			// of the panel is not correctly accessed, so the position of the eye cannot be estimated correctly,
 			// resulting in the eye looking at the wrong direction, to avoid that we will give it some timeout and
 			// wait first for the switch process to complete.
-			Util.setTimeout(() => this.on_property_updated(), 150);
+			Util.setTimeout(() => this.on_property_updated(), 400);
 		}, this);
         this.signals.connect(Main.layoutManager, 'monitors-changed', () => {
 			Util.setTimeout(() => this.on_property_updated(), 100);
@@ -78,6 +78,8 @@ class Eye extends Applet.Applet {
 
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
+		this._last_eye_x = undefined;
+		this._last_eye_y = undefined;
 
 		this.set_active(true);
 		this.update_tooltip();
@@ -343,15 +345,23 @@ class Eye extends Applet.Applet {
 
 	should_redraw() {
 		const [mouse_x, mouse_y, _] = global.get_pointer();
+		const [ox, oy] = this.get_area_position();
 
 		let should_redraw = true;
-		if (this._last_mouse_x == mouse_x && this._last_mouse_y == mouse_y) {
+		if (this._last_mouse_x == mouse_x &&
+			this._last_mouse_y == mouse_y &&
+			this._last_eye_x == ox &&
+			this._last_eye_y == oy
+		) {
 			should_redraw = false;
-		} else if (this._last_mouse_x == undefined || this._last_mouse_y == undefined) {
+		} else if (this._last_mouse_x == undefined ||
+			       this._last_mouse_y == undefined ||
+				   this._last_eye_x != ox ||
+				   this._last_eye_y != oy
+		) {
 			should_redraw = true;
 		} else {
 			const dist = (x, y) => Math.sqrt(x * x + y * y);
-			const [ox, oy] = this.get_area_position();
 			const [last_x, last_y] = [this._last_mouse_x - ox, this._last_mouse_y - oy];
 			const [current_x, current_y] = [mouse_x - ox, mouse_y - oy];
 			const dist_prod = dist(last_x, last_y) * dist(current_x, current_y);
@@ -368,6 +378,8 @@ class Eye extends Applet.Applet {
 		if (should_redraw) {
 			this._last_mouse_x = mouse_x;
 			this._last_mouse_y = mouse_y;
+			this._last_eye_x = ox;
+			this._last_eye_y = oy;
 		}
 
 		return should_redraw;
