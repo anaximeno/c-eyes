@@ -23,6 +23,7 @@ const Applet = imports.ui.applet;
 const Main = imports.ui.main;
 const Gettext = imports.gettext;
 const SignalManager = imports.misc.signalManager;
+const Util = imports.misc.util;
 const { GLib, St, Clutter } = imports.gi;
 
 const { EyeModeFactory } = require("./eyeModes.js");
@@ -64,7 +65,16 @@ class Eye extends Applet.Applet {
 
 		this.signals = new SignalManager.SignalManager(null);
 		this.signals.connect(global.screen, 'in-fullscreen-changed', this.on_fullscreen_changed, this);
-        this.signals.connect(Main.layoutManager, 'monitors-changed', this.on_property_updated, this);
+		this.signals.connect(global.screen, 'workspace-switched', () => {
+			// If the eye is refreshed exactly during the workspace switch process it's possible that the position
+			// of the panel is not correctly accessed, so the position of the eye cannot be estimated correctly,
+			// resulting in the eye looking at the wrong direction, to avoid that we will give it some timeout and
+			// wait first for the switch process to complete.
+			Util.setTimeout(() => this.on_property_updated(), 150);
+		}, this);
+        this.signals.connect(Main.layoutManager, 'monitors-changed', () => {
+			Util.setTimeout(() => this.on_property_updated(), 100);
+		}, this);
 
 		this._last_mouse_x = undefined;
 		this._last_mouse_y = undefined;
@@ -281,7 +291,6 @@ class Eye extends Applet.Applet {
 
 			if (pos) {
 				let [tx, ty] = pos;
-
 				area_x += tx;
 				area_y += ty;
 			}
